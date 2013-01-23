@@ -1,3 +1,3 @@
-[submodule "ECSE683-Computer_Vision/project/oscelview/pyosc"]
-	path = ECSE683-Computer_Vision/project/oscelview/pyosc
+[submodule "pyosc"]
+	path = pyosc
 	url = git://gitorious.org/pyosc/devel.git
