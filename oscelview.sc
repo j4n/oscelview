@@ -1,6 +1,6 @@
 (
 var width = 1024, height = 768;
-var keyHandler;
+var keyHandler, getCoords;
 var circlesize = 10;
 ~joints = Dictionary.new;
 ~joints.add(\head       -> [0.5,0.8,0.5]);
@@ -23,14 +23,17 @@ w = Window.new("OSCeleton Viewer",Rect(100, 200, width, height),false);
 v = UserView(w, w.view.bounds);
 v.background_(Color.grey);
 
+getCoords = { | joint |
+	[((1-(~joints.at(joint).at(0)))*width), ((1-(~joints.at(joint).at(1)))*height)];
+};
+
+getCoords(\head);
 v.drawFunc = {
 	Pen.color = Color.rand;
 
  	// draw a point for each joint
 	~joints.keys.iter.do { | joint |
-		x = ((1-(~joints.at(joint).at(0)))*width);
-		y = ((1-(~joints.at(joint).at(1)))*height);
-		Pen.addOval(Rect(x, y, circlesize, circlesize));
+		Pen.addOval(Rect(getCoords(joint).at(0), getCoords.at(1), circlesize, circlesize));
 		Pen.perform(\fill);
  	}
 
