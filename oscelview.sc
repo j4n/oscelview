@@ -23,27 +23,20 @@ w = Window.new("OSCeleton Viewer",Rect(100, 200, width, height),false);
 v = UserView(w, w.view.bounds);
 v.background_(Color.grey);
 
-
 v.drawFunc = {
-	Pen.color = Color.red;
-	~joints.keys.postln;
- 	~joints.keys.iter.do { | joint |
+	Pen.color = Color.rand;
 
-		x = ((1-(~joints.at(joint).at(0)))*width).postln;
-		y = ((1-(~joints.at(joint).at(1)))*height).postln;
+ 	// draw a point for each joint
+	~joints.keys.iter.do { | joint |
+		x = ((1-(~joints.at(joint).at(0)))*width);
+		y = ((1-(~joints.at(joint).at(1)))*height);
 		Pen.addOval(Rect(x, y, circlesize, circlesize));
 		Pen.perform(\fill);
  	}
 
+	// link the joints
+
 };
-
-
-// v.drawFunc = {
-// 	Pen.color = Color.red;
-//
-// 	Pen.addOval(Rect(0.5*width,200,50,50));
-// 	Pen.perform(\fill);
-// };
 
 keyHandler = { | view, char, modifier, unicode, keycode |
 	w.close;
