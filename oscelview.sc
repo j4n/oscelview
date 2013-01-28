@@ -122,13 +122,7 @@ s = OSCFunc(
 u = OSCFunc(
 	{
 		arg msg, time, addr, recvPort;
-		var user = msg[1];
-		var joint = msg[0];
-		var jx,jy,jz;
-		jx = msg[2];
-		jy = msg[3];
-		jz = msg[4];
-//	~joints.add(\l_foot     -> [0.3,0.1,0.5]);
+		~joints.at(msg[1]).put(msg[0], [msg[2],msg[3],msg[4]]);
 	}, '/joint'
 );
 
