@@ -86,14 +86,16 @@ v.drawFunc = {
 // (on NetAddr.localAddr )
 
 // handle user add/remove, skel add
-n = OSCFunc({
+n = OSCFunc(
+	{
 		arg msg, time, addr, recvPort;
 		"user add ".post;
 		~users.add(msg[1]);
 	}, '/new_user'
 );
 
-l = OSCFunc({
+l = OSCFunc(
+	{
 		arg msg, time, addr, recvPort;
 		"user del ".post;
 		~users.remove(msg[1]);
@@ -102,7 +104,8 @@ l = OSCFunc({
 	}, '/lost_user'
 );
 
-s = OSCFunc({
+s = OSCFunc(
+	{
 		arg msg, time, addr, recvPort;
 		var user = msg[1];
 		"skel add ".post;
@@ -114,7 +117,8 @@ s = OSCFunc({
 // handle joint positions
 // /joint sifff "head" 1 0.525326 0.125740 1.560653
 
-u = OSCFunc({
+u = OSCFunc(
+	{
 		arg msg, time, addr, recvPort;
 		var user = msg[1];
 		var joint = msg[0];
@@ -122,6 +126,7 @@ u = OSCFunc({
 		jx = msg[2];
 		jy = msg[3];
 		jz = msg[4];
+		"joint".postln;
 //	~joints.add(\l_foot     -> [0.3,0.1,0.5]);
 	}, '/joint'
 );
