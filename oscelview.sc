@@ -24,32 +24,38 @@ var circlesize = 10;
 
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
 v = UserView(w, w.view.bounds);
-v.background_(Color.grey);
-~getCoords = { | joint |
-	//j= \head;
-//	[((1-(~joints.at(j).at(0))) *~width), ((1-(~joints.at(j).at(1)))*~height)];
-	[((1-(~joints.at(joint).at(0)))*~width), ((1-(~joints.at(joint).at(1)))*~height)];
-};
+v.background_(Color.grey(0.8));
 
+// compute absolute coords in userview
+~getCoords = { | joint |
+	[
+		((1-(~joints.at(joint).at(0)))*~width),
+		((1-(~joints.at(joint).at(1)))*~height)
+	];
+};
 //~getCoords.value(\head);
 
+// draw the skeletons
 v.drawFunc = {
 	Pen.color = Color.rand;
 
  	// draw a point for each joint
 	~joints.keys.iter.do { | joint |
-		Pen.addOval(Rect(~getCoords.value(joint).at(0), ~getCoords.value(joint).at(1), circlesize, circlesize));
+		Pen.addOval(
+			Rect(
+				~getCoords.value(joint).at(0),
+				~getCoords.value(joint).at(1),
+				circlesize, circlesize;
+			);
+		);
 		Pen.perform(\fill);
  	}
-
-	// link the joints
-
+	// TODO link the joints
 };
 
 keyHandler = { | view, char, modifier, unicode, keycode |
 	w.close;
 };
-
 v.keyDownAction = keyHandler;
 
 w.front;
