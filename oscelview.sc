@@ -16,21 +16,21 @@ s = {
 	~skels = ~skels.add(0);
 	~skelColors.put(0, Color.rand( 0.3,0.8));
 	~joints = ~joints.put(0,Dictionary.new);
-	~joints[0].add(\head       -> [0.5,0.8,0.5]);
-	~joints[0].add(\neck       -> [0.5,0.7,0.5]);
-	~joints[0].add(\l_shoulder -> [0.4,0.7,0.5]);
-	~joints[0].add(\l_elbow    -> [0.3,0.6,0.5]);
-	~joints[0].add(\l_hand     -> [0.2,0.5,0.5]);
-	~joints[0].add(\r_shoulder -> [0.6,0.7,0.5]);
-	~joints[0].add(\r_elbow    -> [0.7,0.6,0.5]);
-	~joints[0].add(\r_hand     -> [0.8,0.5,0.5]);
-	~joints[0].add(\torso      -> [0.5,0.6,0.5]);
-	~joints[0].add(\l_hip      -> [0.4,0.5,0.5]);
-	~joints[0].add(\l_knee     -> [0.4,0.3,0.5]);
-	~joints[0].add(\l_foot     -> [0.3,0.1,0.5]);
-	~joints[0].add(\r_hip      -> [0.6,0.5,0.5]);
-	~joints[0].add(\r_knee     -> [0.6,0.3,0.5]);
-	~joints[0].add(\r_foot     -> [0.7,0.1,0.5]);
+	~joints[0].add(\head       -> [0.5,0.2,0.5]);
+	~joints[0].add(\neck       -> [0.5,0.3,0.5]);
+	~joints[0].add(\l_shoulder -> [0.6,0.3,0.5]);
+	~joints[0].add(\l_elbow    -> [0.7,0.4,0.5]);
+	~joints[0].add(\l_hand     -> [0.8,0.5,0.5]);
+	~joints[0].add(\r_shoulder -> [0.4,0.3,0.5]);
+	~joints[0].add(\r_elbow    -> [0.3,0.4,0.5]);
+	~joints[0].add(\r_hand     -> [0.2,0.5,0.5]);
+	~joints[0].add(\torso      -> [0.5,0.4,0.5]);
+	~joints[0].add(\l_hip      -> [0.6,0.5,0.5]);
+	~joints[0].add(\l_knee     -> [0.6,0.7,0.5]);
+	~joints[0].add(\l_foot     -> [0.7,0.9,0.5]);
+	~joints[0].add(\r_hip      -> [0.4,0.5,0.5]);
+	~joints[0].add(\r_knee     -> [0.4,0.7,0.5]);
+	~joints[0].add(\r_foot     -> [0.3,0.9,0.5]);
 };
 
 //s.value;
@@ -42,8 +42,8 @@ v.background_(Color.grey(0.97));
 // compute absolute coords in userview
 ~getCoords = { | user, joint |
 	[
-		((1-(~joints.at(user).at(joint).at(0)))*~width),
-		((1-(~joints.at(user).at(joint).at(1)))*~height)
+		(((~joints.at(user).at(joint).at(0)))*~width),
+		(((~joints.at(user).at(joint).at(1)))*~height)
 	];
 };
 
@@ -52,8 +52,8 @@ v.drawFunc = {
 	if (
 		~skels.size > 0,
 		{
-			"users with skels: ".post;
-			~skels.post;
+			//"users with skels: ".post;
+			//~skels.post;
 
 			~skels.do { | user |
 				Pen.color = ~skelColors.at(user);
@@ -70,11 +70,13 @@ v.drawFunc = {
 				}
 			}
 		},
-		{ "no users with skeletons".post;}
+		{
+			//"no users with skeletons".postln;
+		}
 	);
 	// TODO link the joints
-	", framerate: ".post;
-	v.frameRate.postln;
+	//", framerate: ".post;
+	//v.frameRate.postln;
 };
 
 // OSC Processing:
@@ -110,19 +112,19 @@ s = OSCFunc(
 		arg msg, time, addr, recvPort;
 		var user = msg[1];
 		"skel add ".post;
+		user.postln;
 		~skels.add(user);
-		~joints = ~joints.put(msg[1],Dictionary.new);
+		~joints = ~joints.put(user,Dictionary.new);
 		~skelColors.put(user, Color.rand( 0.3,0.8));
 	}, '/new_skel'
 );
 
 // handle joint positions
 // /joint sifff "head" 1 0.525326 0.125740 1.560653
-
 u = OSCFunc(
 	{
 		arg msg, time, addr, recvPort;
-		~joints.at(msg[1]).put(msg[0], [msg[2],msg[3],msg[4]]);
+		~joints.at(msg[2]).put(msg[1], [msg[3],msg[4],msg[5]]);
 	}, '/joint'
 );
 
@@ -130,10 +132,11 @@ keyHandler = { | view, char, modifier, unicode, keycode |
 	n.free;
 	l.free;
 	s.free;
-	o.free;    // remove the OSCresponderNode when you are done.
+	o.free;    //c remove the OSCresponderNode when you are done.
 	v.animate = false; //animation can be paused and resumed
 	w.close;
 };
+
 v.keyDownAction = keyHandler;
 
 v.animate = true;
