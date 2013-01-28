@@ -7,53 +7,68 @@ var circlesize = 10;
 
 ~users = Set.new;
 ~skels = Set.new;
-~joints = Dictionary.new;
+~joints = Array.new;
 
 // sample data
-~joints.add(\head       -> [0.5,0.8,0.5]);
-~joints.add(\neck       -> [0.5,0.7,0.5]);
-~joints.add(\l_shoulder -> [0.4,0.7,0.5]);
-~joints.add(\l_elbow    -> [0.3,0.6,0.5]);
-~joints.add(\l_hand     -> [0.2,0.5,0.5]);
-~joints.add(\r_shoulder -> [0.6,0.7,0.5]);
-~joints.add(\r_elbow    -> [0.7,0.6,0.5]);
-~joints.add(\r_hand     -> [0.8,0.5,0.5]);
-~joints.add(\torso      -> [0.5,0.6,0.5]);
-~joints.add(\l_hip      -> [0.4,0.5,0.5]);
-~joints.add(\l_knee     -> [0.4,0.3,0.5]);
-~joints.add(\l_foot     -> [0.3,0.1,0.5]);
-~joints.add(\r_hip      -> [0.6,0.5,0.5]);
-~joints.add(\r_knee     -> [0.6,0.3,0.5]);
-~joints.add(\r_foot     -> [0.7,0.1,0.5]);
+~users = ~users.add(0);
+~skels = ~skels.add(0);
+~joints = ~joints.add(Dictionary.new);
+~joints[0].add(\head       -> [0.5,0.8,0.5]);
+~joints[0].add(\neck       -> [0.5,0.7,0.5]);
+~joints[0].add(\l_shoulder -> [0.4,0.7,0.5]);
+~joints[0].add(\l_elbow    -> [0.3,0.6,0.5]);
+~joints[0].add(\l_hand     -> [0.2,0.5,0.5]);
+~joints[0].add(\r_shoulder -> [0.6,0.7,0.5]);
+~joints[0].add(\r_elbow    -> [0.7,0.6,0.5]);
+~joints[0].add(\r_hand     -> [0.8,0.5,0.5]);
+~joints[0].add(\torso      -> [0.5,0.6,0.5]);
+~joints[0].add(\l_hip      -> [0.4,0.5,0.5]);
+~joints[0].add(\l_knee     -> [0.4,0.3,0.5]);
+~joints[0].add(\l_foot     -> [0.3,0.1,0.5]);
+~joints[0].add(\r_hip      -> [0.6,0.5,0.5]);
+~joints[0].add(\r_knee     -> [0.6,0.3,0.5]);
+~joints[0].add(\r_foot     -> [0.7,0.1,0.5]);
 
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
 v = UserView(w, w.view.bounds);
 v.background_(Color.grey(0.8));
 
 // compute absolute coords in userview
-~getCoords = { | joint |
+~getCoords = { | user, joint |
 	[
-		((1-(~joints.at(joint).at(0)))*~width),
-		((1-(~joints.at(joint).at(1)))*~height)
+		((1-(~joints.at(user).at(joint).at(0)))*~width),
+		((1-(~joints.at(user).at(joint).at(1)))*~height)
 	];
 };
 //~getCoords.value(\head);
 
 // draw the skeletons
 v.drawFunc = {
-	Pen.color = Color.rand;
+	if (
+		~skels.size > 0,
+		{
+			"users with skels: ".post;
+			~skels.postln;
 
- 	// draw a point for each joint
-	~joints.keys.iter.do { | joint |
-		Pen.addOval(
-			Rect(
-				~getCoords.value(joint).at(0),
-				~getCoords.value(joint).at(1),
-				circlesize, circlesize;
-			);
-		);
-		Pen.perform(\fill);
- 	}
+			~skels.do { | user |
+				user.postln;
+				Pen.color = Color.rand;
+
+				// draw a point for each joint of each user
+				~joints[user].keys.iter.do { | joint |
+					Pen.addOval(
+						Rect(
+							~getCoords.value(user,joint).at(0),
+							~getCoords.value(user,joint).at(1),
+							circlesize, circlesize;
+						);
+					);
+					Pen.perform(\fill);
+				}
+			}
+		},
+		{ "no users!".postln;}
+	)
 	// TODO link the joints
 };
 
