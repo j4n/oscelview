@@ -33,7 +33,7 @@ s = {
 	~joints[0].add(\r_foot     -> [0.7,0.1,0.5]);
 };
 
-s.value;
+//s.value;
 
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
 v = UserView(w, w.view.bounds);
@@ -46,7 +46,6 @@ v.background_(Color.grey(0.97));
 		((1-(~joints.at(user).at(joint).at(1)))*~height)
 	];
 };
-//~getCoords.value(\head);
 
 // draw the skeletons
 v.drawFunc = {
@@ -71,7 +70,7 @@ v.drawFunc = {
 				}
 			}
 		},
-		{ "no users!".postln;}
+		{ "no users with skeletons".post;}
 	);
 	// TODO link the joints
 	", framerate: ".post;
@@ -88,41 +87,44 @@ v.drawFunc = {
 
 // handle user add/remove, skel add
 n = OSCFunc({
-	arg msg, time, addr, recvPort;
-	"user add ".post;
-	~users.add(msg[1]);
-}, '/new_user');
+		arg msg, time, addr, recvPort;
+		"user add ".post;
+		~users.add(msg[1]);
+	}, '/new_user'
+);
 
 l = OSCFunc({
-	arg msg, time, addr, recvPort;
-	"user del ".post;
-	~users.remove(msg[1]);
-	~skels.remove(msg[1]);
-	~skelColors.remove(msg[1]);
-}, '/lost_user');
+		arg msg, time, addr, recvPort;
+		"user del ".post;
+		~users.remove(msg[1]);
+		~skels.remove(msg[1]);
+		~skelColors.remove(msg[1]);
+	}, '/lost_user'
+);
 
 s = OSCFunc({
-	arg msg, time, addr, recvPort;
-	var user = msg[1];
-	"skel add ".post;
-	~skels.add(user);
-	~skelColors.put(user, Color.rand( 0.3,0.8));
-}, '/new_skel');
+		arg msg, time, addr, recvPort;
+		var user = msg[1];
+		"skel add ".post;
+		~skels.add(user);
+		~skelColors.put(user, Color.rand( 0.3,0.8));
+	}, '/new_skel'
+);
 
 // handle joint positions
 // /joint sifff "head" 1 0.525326 0.125740 1.560653
 
 u = OSCFunc({
-	arg msg, time, addr, recvPort;
-	var user = msg[1];
-	var joint = msg[0];
-	var jx,jy,jz;
-	jx = msg[2];
-	jy = msg[3];
-	jz = msg[4];
+		arg msg, time, addr, recvPort;
+		var user = msg[1];
+		var joint = msg[0];
+		var jx,jy,jz;
+		jx = msg[2];
+		jy = msg[3];
+		jz = msg[4];
 //	~joints.add(\l_foot     -> [0.3,0.1,0.5]);
-
-}, '/joint');
+	}, '/joint'
+);
 
 keyHandler = { | view, char, modifier, unicode, keycode |
 	n.free;
