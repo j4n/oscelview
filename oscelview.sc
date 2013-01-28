@@ -8,12 +8,13 @@ var circlesize = 10;
 ~users = Set.new;
 ~skels = Set.new;
 ~joints = Array.new;
-
+~skelColors = Dictionary.new;
 
 s = {
 	// add sample data
 	~users = ~users.add(0);
 	~skels = ~skels.add(0);
+	~skelColors.put(0, Color.rand( 0.3,0.8));
 	~joints = ~joints.add(Dictionary.new);
 	~joints[0].add(\head       -> [0.5,0.8,0.5]);
 	~joints[0].add(\neck       -> [0.5,0.7,0.5]);
@@ -34,10 +35,9 @@ s = {
 
 s.value;
 
-
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
 v = UserView(w, w.view.bounds);
-v.background_(Color.grey(0.8));
+v.background_(Color.grey(0.97));
 
 // compute absolute coords in userview
 ~getCoords = { | user, joint |
@@ -54,12 +54,10 @@ v.drawFunc = {
 		~skels.size > 0,
 		{
 			"users with skels: ".post;
-			~skels.postln;
+			~skels.post;
 
 			~skels.do { | user |
-				user.postln;
-				Pen.color = Color.rand;
-
+				Pen.color = ~skelColors.at(user);
 				// draw a point for each joint of each user
 				~joints[user].keys.iter.do { | joint |
 					Pen.addOval(
@@ -74,8 +72,10 @@ v.drawFunc = {
 			}
 		},
 		{ "no users!".postln;}
-	)
+	);
 	// TODO link the joints
+	", framerate: ".post;
+	v.frameRate.postln;
 };
 
 // OSC Processing:
@@ -96,13 +96,17 @@ n = OSCFunc({
 l = OSCFunc({
 	arg msg, time, addr, recvPort;
 	"user del ".post;
-	~users.remove(msg[1])
+	~users.remove(msg[1]);
+	~skels.remove(msg[1]);
+	~skelColors.remove(msg[1]);
 }, '/lost_user');
 
 s = OSCFunc({
 	arg msg, time, addr, recvPort;
+	var user = msg[1];
 	"skel add ".post;
-	~skels.add(msg[1])
+	~skels.add(user);
+	~skelColors.put(user, Color.rand( 0.3,0.8));
 }, '/new_skel');
 
 // handle joint positions
@@ -125,10 +129,13 @@ keyHandler = { | view, char, modifier, unicode, keycode |
 	l.free;
 	s.free;
 	o.free;    // remove the OSCresponderNode when you are done.
+	v.animate = false; //animation can be paused and resumed
 	w.close;
 };
 v.keyDownAction = keyHandler;
 
+v.animate = true;
+v.frameRate = 30;
 w.front;
 
 )
