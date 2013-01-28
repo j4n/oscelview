@@ -7,7 +7,7 @@ var circlesize = 10;
 
 ~users = Set.new;
 ~skels = Set.new;
-~joints = Array.new;
+~joints = Dictionary.new;
 ~skelColors = Dictionary.new;
 
 s = {
@@ -15,7 +15,7 @@ s = {
 	~users = ~users.add(0);
 	~skels = ~skels.add(0);
 	~skelColors.put(0, Color.rand( 0.3,0.8));
-	~joints = ~joints.add(Dictionary.new);
+	~joints = ~joints.put(0,Dictionary.new);
 	~joints[0].add(\head       -> [0.5,0.8,0.5]);
 	~joints[0].add(\neck       -> [0.5,0.7,0.5]);
 	~joints[0].add(\l_shoulder -> [0.4,0.7,0.5]);
@@ -58,7 +58,7 @@ v.drawFunc = {
 			~skels.do { | user |
 				Pen.color = ~skelColors.at(user);
 				// draw a point for each joint of each user
-				~joints[user].keys.iter.do { | joint |
+				~joints.at(user).keys.iter.do { | joint |
 					Pen.addOval(
 						Rect(
 							~getCoords.value(user,joint).at(0),
@@ -90,7 +90,7 @@ n = OSCFunc(
 	{
 		arg msg, time, addr, recvPort;
 		"user add ".post;
-		~users.add(msg[1]);
+		~users.add(msg[1]).postln;
 	}, '/new_user'
 );
 
@@ -98,8 +98,9 @@ l = OSCFunc(
 	{
 		arg msg, time, addr, recvPort;
 		"user del ".post;
-		~users.remove(msg[1]);
+		~users.remove(msg[1]).postln;
 		~skels.remove(msg[1]);
+		~joints.remove(msg[1]);
 		~skelColors.remove(msg[1]);
 	}, '/lost_user'
 );
@@ -110,6 +111,7 @@ s = OSCFunc(
 		var user = msg[1];
 		"skel add ".post;
 		~skels.add(user);
+		~joints = ~joints.put(msg[1],Dictionary.new);
 		~skelColors.put(user, Color.rand( 0.3,0.8));
 	}, '/new_skel'
 );
@@ -126,7 +128,6 @@ u = OSCFunc(
 		jx = msg[2];
 		jy = msg[3];
 		jz = msg[4];
-		"joint".postln;
 //	~joints.add(\l_foot     -> [0.3,0.1,0.5]);
 	}, '/joint'
 );
