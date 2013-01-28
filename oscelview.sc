@@ -9,25 +9,31 @@ var circlesize = 10;
 ~skels = Set.new;
 ~joints = Array.new;
 
-// sample data
-~users = ~users.add(0);
-~skels = ~skels.add(0);
-~joints = ~joints.add(Dictionary.new);
-~joints[0].add(\head       -> [0.5,0.8,0.5]);
-~joints[0].add(\neck       -> [0.5,0.7,0.5]);
-~joints[0].add(\l_shoulder -> [0.4,0.7,0.5]);
-~joints[0].add(\l_elbow    -> [0.3,0.6,0.5]);
-~joints[0].add(\l_hand     -> [0.2,0.5,0.5]);
-~joints[0].add(\r_shoulder -> [0.6,0.7,0.5]);
-~joints[0].add(\r_elbow    -> [0.7,0.6,0.5]);
-~joints[0].add(\r_hand     -> [0.8,0.5,0.5]);
-~joints[0].add(\torso      -> [0.5,0.6,0.5]);
-~joints[0].add(\l_hip      -> [0.4,0.5,0.5]);
-~joints[0].add(\l_knee     -> [0.4,0.3,0.5]);
-~joints[0].add(\l_foot     -> [0.3,0.1,0.5]);
-~joints[0].add(\r_hip      -> [0.6,0.5,0.5]);
-~joints[0].add(\r_knee     -> [0.6,0.3,0.5]);
-~joints[0].add(\r_foot     -> [0.7,0.1,0.5]);
+
+s = {
+	// add sample data
+	~users = ~users.add(0);
+	~skels = ~skels.add(0);
+	~joints = ~joints.add(Dictionary.new);
+	~joints[0].add(\head       -> [0.5,0.8,0.5]);
+	~joints[0].add(\neck       -> [0.5,0.7,0.5]);
+	~joints[0].add(\l_shoulder -> [0.4,0.7,0.5]);
+	~joints[0].add(\l_elbow    -> [0.3,0.6,0.5]);
+	~joints[0].add(\l_hand     -> [0.2,0.5,0.5]);
+	~joints[0].add(\r_shoulder -> [0.6,0.7,0.5]);
+	~joints[0].add(\r_elbow    -> [0.7,0.6,0.5]);
+	~joints[0].add(\r_hand     -> [0.8,0.5,0.5]);
+	~joints[0].add(\torso      -> [0.5,0.6,0.5]);
+	~joints[0].add(\l_hip      -> [0.4,0.5,0.5]);
+	~joints[0].add(\l_knee     -> [0.4,0.3,0.5]);
+	~joints[0].add(\l_foot     -> [0.3,0.1,0.5]);
+	~joints[0].add(\r_hip      -> [0.6,0.5,0.5]);
+	~joints[0].add(\r_knee     -> [0.6,0.3,0.5]);
+	~joints[0].add(\r_foot     -> [0.7,0.1,0.5]);
+};
+
+s.value;
+
 
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
 v = UserView(w, w.view.bounds);
