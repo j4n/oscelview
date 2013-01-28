@@ -5,7 +5,11 @@ var circlesize = 10;
 ~width = 1024;
 ~height = 768;
 
+~users = Set.new;
+~skels = Set.new;
 ~joints = Dictionary.new;
+
+// sample data
 ~joints.add(\head       -> [0.5,0.8,0.5]);
 ~joints.add(\neck       -> [0.5,0.7,0.5]);
 ~joints.add(\l_shoulder -> [0.4,0.7,0.5]);
@@ -53,7 +57,53 @@ v.drawFunc = {
 	// TODO link the joints
 };
 
+// OSC Processing:
+
+//OSCFunc.trace(true); // Turn posting on
+//OSCFunc.trace(false); // Turn posting off
+
+// from OSC Communication Guide - receive from variable source port
+// (on NetAddr.localAddr )
+
+// handle user add/remove, skel add
+n = OSCFunc({
+	arg msg, time, addr, recvPort;
+	"user add ".post;
+	~users.add(msg[1]);
+}, '/new_user');
+
+l = OSCFunc({
+	arg msg, time, addr, recvPort;
+	"user del ".post;
+	~users.remove(msg[1])
+}, '/lost_user');
+
+s = OSCFunc({
+	arg msg, time, addr, recvPort;
+	"skel add ".post;
+	~skels.add(msg[1])
+}, '/new_skel');
+
+// handle joint positions
+// /joint sifff "head" 1 0.525326 0.125740 1.560653
+
+u = OSCFunc({
+	arg msg, time, addr, recvPort;
+	var user = msg[1];
+	var joint = msg[0];
+	var jx,jy,jz;
+	jx = msg[2];
+	jy = msg[3];
+	jz = msg[4];
+//	~joints.add(\l_foot     -> [0.3,0.1,0.5]);
+
+}, '/joint');
+
 keyHandler = { | view, char, modifier, unicode, keycode |
+	n.free;
+	l.free;
+	s.free;
+	o.free;    // remove the OSCresponderNode when you are done.
 	w.close;
 };
 v.keyDownAction = keyHandler;
