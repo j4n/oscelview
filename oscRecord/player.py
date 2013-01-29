@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# vim:sw=4:ts=4:sts=4:expandtab
 
 import sys
 import socket
@@ -10,14 +11,14 @@ import time
 import gdbm
 
 class OSCPlayer:
-    def __init__(self, filename, host, port):
+    def __init__(self, filename):
         self.filename=filename
         self.shelve=shelve.open(self.filename)
+
+    def play(self, host, port):
         self.host=host
         self.port=port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-    def play(self):
         l=len(self.shelve)
         for i in range(l):
             if self.shelve.has_key(str(i)):
@@ -28,14 +29,23 @@ class OSCPlayer:
                 self.s.sendto(data, (self.host, self.port))
         self.shelve.close()        
 
+    def getreclength(self):
+        length = 0;
+        for r in self.shelve.values():
+            length += r[0]; 
+        print "total " + str(len(self.shelve)) + " records, " + str(length) + "s long"
+
 if __name__ == "__main__":
-    print len(sys.argv)
-    if len(sys.argv) != 4:
-        print "usage: " + sys.argv[0] + " filename host port"
+    if len(sys.argv) == 1:
+        print "usage: "
+        print "    " + sys.argv[0] + " filename host port # (play)"
+        print "    " + sys.argv[0] + " filename # (show info)"
         sys.exit(0)
-            
-    player=OSCPlayer(sys.argv[1], sys.argv[2], int(sys.argv[3]))
-    player.play()
+    elif len(sys.argv) >= 2:
+        player=OSCPlayer(sys.argv[1])
+        player.getreclength();
+        if len(sys.argv) == 4:
+            player.play(sys.argv[2], int(sys.argv[3]))
 
        
     
