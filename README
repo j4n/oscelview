@@ -4,3 +4,7 @@ There are two approaches now, Supercollider (.sc) and Python (.py), the latter
 being abandoned for the moment.
 
 The SuperCollider one needs SuperCollider 3.6+.
+
+oscRecord contains a slightly patched version of the OSC record/playback 
+program by @LFSaw 
+(http://comments.gmane.org/gmane.comp.audio.supercollider.user/32629h)
