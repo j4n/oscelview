@@ -11,31 +11,6 @@ var circlesize = 10;
 ~joints = Dictionary.new;
 ~skelColors = Dictionary.new;
 
-s = {
-	// add sample data
-	~users = ~users.add(0);
-	~skels = ~skels.add(0);
-	~skelColors.put(0, Color.rand( 0.3,0.8));
-	~joints = ~joints.put(0,Dictionary.new);
-	~joints[0].add(\head       -> [0.5,0.2,0.5]);
-	~joints[0].add(\neck       -> [0.5,0.3,0.5]);
-	~joints[0].add(\l_shoulder -> [0.6,0.3,0.5]);
-	~joints[0].add(\l_elbow    -> [0.7,0.4,0.5]);
-	~joints[0].add(\l_hand     -> [0.8,0.5,0.5]);
-	~joints[0].add(\r_shoulder -> [0.4,0.3,0.5]);
-	~joints[0].add(\r_elbow    -> [0.3,0.4,0.5]);
-	~joints[0].add(\r_hand     -> [0.2,0.5,0.5]);
-	~joints[0].add(\torso      -> [0.5,0.4,0.5]);
-	~joints[0].add(\l_hip      -> [0.6,0.5,0.5]);
-	~joints[0].add(\l_knee     -> [0.6,0.7,0.5]);
-	~joints[0].add(\l_foot     -> [0.7,0.9,0.5]);
-	~joints[0].add(\r_hip      -> [0.4,0.5,0.5]);
-	~joints[0].add(\r_knee     -> [0.4,0.7,0.5]);
-	~joints[0].add(\r_foot     -> [0.3,0.9,0.5]);
-};
-
-//s.value;
-
 ~jointLinks = Set[
 	[\l_hand, \l_elbow],
 	[\l_elbow, \l_shoulder],
@@ -190,4 +165,28 @@ v.animate = true;
 v.frameRate = 30;
 w.front;
 
+s = {
+	// add sample data
+	~users = ~users.add(0);
+	~skels = ~skels.add(0);
+	~skelColors.put(0, Color.rand( 0.3,0.8));
+	~joints = ~joints.put(0,Dictionary.new);
+	~joints[0].add(\head       -> [0.5,0.2,0.5]);
+	~joints[0].add(\neck       -> [0.5,0.3,0.5]);
+	~joints[0].add(\l_shoulder -> [0.6,0.3,0.5]);
+	~joints[0].add(\l_elbow    -> [0.7,0.4,0.5]);
+	~joints[0].add(\l_hand     -> [0.8,0.5,0.5]);
+	~joints[0].add(\r_shoulder -> [0.4,0.3,0.5]);
+	~joints[0].add(\r_elbow    -> [0.3,0.4,0.5]);
+	~joints[0].add(\r_hand     -> [0.2,0.5,0.5]);
+	~joints[0].add(\torso      -> [0.5,0.4,0.5]);
+	~joints[0].add(\l_hip      -> [0.6,0.5,0.5]);
+	~joints[0].add(\l_knee     -> [0.6,0.7,0.5]);
+	~joints[0].add(\l_foot     -> [0.7,0.9,0.5]);
+	~joints[0].add(\r_hip      -> [0.4,0.5,0.5]);
+	~joints[0].add(\r_knee     -> [0.4,0.7,0.5]);
+	~joints[0].add(\r_foot     -> [0.3,0.9,0.5]);
+};
+
+//s.value;
 )
