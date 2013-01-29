@@ -35,6 +35,30 @@ s = {
 
 //s.value;
 
+~jointLinks = Set[
+	[\l_hand, \l_elbow],
+	[\l_elbow, \l_shoulder],
+	[\l_shoulder, \neck],
+	[\neck, \head],
+	[\neck, \r_shoulder],
+	[\r_shoulder, \r_elbow],
+	[\r_elbow, \r_hand],
+	[\l_shoulder, \torso],
+	[\r_shoulder, \torso],
+	[\torso, \l_hip],
+	[\torso, \r_hip],
+	[\l_hip, \r_hip],
+	[\l_hip, \l_knee],
+	[\r_hip, \r_knee],
+	[\l_knee, \l_foot],
+	[\r_knee, \r_foot]
+];
+
+~emphasizedJoints = Set["head", "l_hand", "r_hand", "l_foot", "r_foot"];
+
+// todo getcoords schoen
+// todo extremitaeten fett
+
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
 v = UserView(w, w.view.bounds);
 v.background_(Color.grey(0.97));
@@ -61,31 +85,39 @@ v.drawFunc = {
 				~joints.at(user).keys.iter.do { | joint |
 					Pen.addOval(
 						Rect(
-							~getCoords.value(user,joint).at(0),
-							~getCoords.value(user,joint).at(1),
+							~getCoords.value(user,joint).at(0)-(circlesize/2),
+							~getCoords.value(user,joint).at(1)-(circlesize/2),
 							circlesize, circlesize;
 						);
 					);
-					Pen.perform(\fill);
+					Pen.perform(\stroke);
+
+					~jointLinks.do { | jointPair |
+						var pointA = Point.new(
+							~getCoords.value(user,jointPair[0]).at(0),
+							~getCoords.value(user,jointPair[0]).at(1)
+						);
+						var pointB = Point.new(
+							~getCoords.value(user,jointPair[1]).at(0),
+							~getCoords.value(user,jointPair[1]).at(1)
+						);
+						Pen.line(pointA,pointB);
+					};
 				}
-			}
+			};
 		},
 		{
 			//"no users with skeletons".postln;
 		}
 	);
 	// TODO link the joints
+
+
 	//", framerate: ".post;
 	//v.frameRate.postln;
 };
 
 // OSC Processing:
-
-//OSCFunc.trace(true); // Turn posting on
-//OSCFunc.trace(false); // Turn posting off
-
-// from OSC Communication Guide - receive from variable source port
-// (on NetAddr.localAddr )
 
 // handle user add/remove, skel add
 n = OSCFunc(
@@ -129,12 +161,15 @@ u = OSCFunc(
 );
 
 keyHandler = { | view, char, modifier, unicode, keycode |
-	n.free;
-	l.free;
-	s.free;
-	o.free;    //c remove the OSCresponderNode when you are done.
-	v.animate = false; //animation can be paused and resumed
-	w.close;
+	(unicode == 27).if { // escape key quits
+		n.free;
+		l.free;
+		s.free;
+		o.free;    //c remove the OSCresponderNode when you are done.
+		v.animate = false; //animation can be paused and resumed
+		w.close;
+	};
+
 };
 
 v.keyDownAction = keyHandler;
