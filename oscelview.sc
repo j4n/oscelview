@@ -2,6 +2,7 @@
 var keyHandler;
 var circlesize = 10;
 
+~debug = False;
 ~width = 1024;
 ~height = 768;
 
@@ -73,8 +74,10 @@ v.drawFunc = {
 	if (
 		~skels.size > 0,
 		{
-			//"users with skels: ".post;
-			//~skels.post;
+			(~debug == True).if {
+				"users with skels: ".post;
+				~skels.post;
+			};
 
 			~skels.do { | user |
 				Pen.color = ~skelColors.at(user);
@@ -107,12 +110,16 @@ v.drawFunc = {
 			};
 		},
 		{
-			//"no users with skeletons".postln;
+			(~debug == True).if {
+				"no users with skeletons".post;
+			}
 		}
 	);
 
-	//", framerate: ".post;
-	//v.frameRate.postln;
+	(~debug == True).if {
+		", framerate: ".post;
+		v.frameRate.postln;
+	};
 };
 
 // OSC Processing:
@@ -168,6 +175,13 @@ keyHandler = { | view, char, modifier, unicode, keycode |
 		w.close;
 	};
 
+	(char == $d).if {
+		if (
+			~debug == True,
+			{ ~debug = False; },
+			{ ~debug = True; }
+		)
+	};
 };
 
 v.keyDownAction = keyHandler;
