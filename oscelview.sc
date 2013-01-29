@@ -54,7 +54,7 @@ s = {
 	[\r_knee, \r_foot]
 ];
 
-~emphasizedJoints = Set["head", "l_hand", "r_hand", "l_foot", "r_foot"];
+~emphasizedJoints = Set[\head, \l_hand, \r_hand, \l_foot, \r_foot];
 
 // todo getcoords schoen
 // todo extremitaeten fett
@@ -90,7 +90,12 @@ v.drawFunc = {
 							circlesize, circlesize;
 						);
 					);
-					Pen.perform(\stroke);
+
+					if (
+						[joint].isSubsetOf(~emphasizedJoints),
+						{Pen.perform(\fill);},
+						{Pen.perform(\stroke);}
+					);
 
 					~jointLinks.do { | jointPair |
 						var pointA = Point.new(
