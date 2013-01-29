@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# vim:sw=4:ts=4:sts=4
+# vim:sw=4:ts=4:sts=4:expandtab
 # convert osc recordings in python shelve format to csv
 
 import sys
