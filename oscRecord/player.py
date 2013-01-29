@@ -20,11 +20,14 @@ class OSCPlayer:
         self.port=port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         l=len(self.shelve)
+        t=0
         for i in range(l):
             if self.shelve.has_key(str(i)):
-                print self.shelve[str(i)]
-                data=self.shelve[str(i)][1]
                 tmstmp=self.shelve[str(i)][0]
+                t += tmstmp
+                data=self.shelve[str(i)][1]
+                #print str(i) + " @ " + str(t) + " s +" + str(tmstmp) + " s " #+ str(data[:20])
+                print '% 8d @ % 8.4f s + %.4f s - %s' % (i,t,tmstmp,data[:30])
                 time.sleep(tmstmp)
                 self.s.sendto(data, (self.host, self.port))
         self.shelve.close()        
@@ -38,13 +41,17 @@ class OSCPlayer:
 if __name__ == "__main__":
     if len(sys.argv) == 1:
         print "usage: "
-        print "    " + sys.argv[0] + " filename host port # (play)"
         print "    " + sys.argv[0] + " filename # (show info)"
+        print "    " + sys.argv[0] + " filename host port # (play)"
+        print "    " + sys.argv[0] + " filename host port start end # (play subset)"
         sys.exit(0)
     elif len(sys.argv) >= 2:
         player=OSCPlayer(sys.argv[1])
         player.getreclength();
-        if len(sys.argv) == 4:
+        if len(sys.argv) >= 4:
+            if len(sys.argv) == 6:
+                start = sys.argv[4]
+                end = sys.argv[5]
             player.play(sys.argv[2], int(sys.argv[3]))
 
        
