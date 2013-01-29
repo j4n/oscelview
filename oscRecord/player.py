@@ -31,7 +31,7 @@ class OSCPlayer:
 if __name__ == "__main__":
     print len(sys.argv)
     if len(sys.argv) != 4:
-        print "gib 3 argumente an!!! (filename, host, port) gebe auf..."
+        print "usage: " + sys.argv[0] + " filename host port"
         sys.exit(0)
             
     player=OSCPlayer(sys.argv[1], sys.argv[2], int(sys.argv[3]))
