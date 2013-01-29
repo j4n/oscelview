@@ -56,9 +56,6 @@ s = {
 
 ~emphasizedJoints = Set[\head, \l_hand, \r_hand, \l_foot, \r_foot];
 
-// todo getcoords schoen
-// todo extremitaeten fett
-
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
 v = UserView(w, w.view.bounds);
 v.background_(Color.grey(0.97));
@@ -83,10 +80,11 @@ v.drawFunc = {
 				Pen.color = ~skelColors.at(user);
 				// draw a point for each joint of each user
 				~joints.at(user).keys.iter.do { | joint |
+					var coords = ~getCoords.value(user,joint);
 					Pen.addOval(
 						Rect(
-							~getCoords.value(user,joint).at(0)-(circlesize/2),
-							~getCoords.value(user,joint).at(1)-(circlesize/2),
+							coords.at(0)-(circlesize/2),
+							coords.at(1)-(circlesize/2),
 							circlesize, circlesize;
 						);
 					);
@@ -98,15 +96,12 @@ v.drawFunc = {
 					);
 
 					~jointLinks.do { | jointPair |
-						var pointA = Point.new(
-							~getCoords.value(user,jointPair[0]).at(0),
-							~getCoords.value(user,jointPair[0]).at(1)
+						var coordsA = ~getCoords.value(user,jointPair[0]);
+						var coordsB = ~getCoords.value(user,jointPair[1]);
+						Pen.line(
+							coordsA.at(0)@coordsA.at(1),
+							coordsB.at(0)@coordsB.at(1)
 						);
-						var pointB = Point.new(
-							~getCoords.value(user,jointPair[1]).at(0),
-							~getCoords.value(user,jointPair[1]).at(1)
-						);
-						Pen.line(pointA,pointB);
 					};
 				}
 			};
@@ -115,8 +110,6 @@ v.drawFunc = {
 			//"no users with skeletons".postln;
 		}
 	);
-	// TODO link the joints
-
 
 	//", framerate: ".post;
 	//v.frameRate.postln;
