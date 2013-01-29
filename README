@@ -1,1 +1,6 @@
 OSC Skeleton Viewer & Recorder
+
+There are two approaches now, Supercollider (.sc) and Python (.py), the latter
+being abandoned for the moment.
+
+The SuperCollider one needs SuperCollider 3.6+.
