@@ -15,13 +15,20 @@ class OSCPlayer:
         self.filename=filename
         self.shelve=shelve.open(self.filename)
 
-    def play(self, host, port):
+    def play(self, host, port, start, end):
         self.host=host
         self.port=port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        l=len(self.shelve)
-        t=0
-        for i in range(l):
+
+        if (start == -1):
+            start = 0
+        
+        if (end == -1):
+            end = len(self.shelve)
+
+        r = range(start,end);
+        t = 0
+        for i in r:
             if self.shelve.has_key(str(i)):
                 tmstmp=self.shelve[str(i)][0]
                 t += tmstmp
@@ -48,11 +55,16 @@ if __name__ == "__main__":
     elif len(sys.argv) >= 2:
         player=OSCPlayer(sys.argv[1])
         player.getreclength();
+
         if len(sys.argv) >= 4:
             if len(sys.argv) == 6:
-                start = sys.argv[4]
-                end = sys.argv[5]
-            player.play(sys.argv[2], int(sys.argv[3]))
+                start = int(sys.argv[4])
+                end = int(sys.argv[5])
+            else:
+                start = -1
+                end = -1
+
+            player.play(sys.argv[2], int(sys.argv[3]), start, end)
 
        
     
