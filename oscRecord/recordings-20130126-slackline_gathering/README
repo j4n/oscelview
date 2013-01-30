@@ -1,0 +1,31 @@
+chantal_1.db total 9373 records, 335.592996597s long
+	good slackliner: 
+		trying to stand still 
+		bending knees
+		turning torso
+		free movements
+
+knees_1.db total 2547 records, 73.8956353664s long
+	bending the knees, first off, then on the slackline
+
+leave_1.db total 18094 records, 449.265340805s long
+leave_2.db total 4804 records, 278.502944946s long
+leave_3.db total 21451 records, 1222.00446343s long
+	left the recording running unattendedly, 
+	may contain multiple users
+
+square_1.db total 2829 records, 87.0680520535s long
+	trying to stand up
+	then rotating torso on the ground
+	trying to stand up again
+
+square_2.db total 1559 records, 37.6732738018s long
+	rotating torso on the ground
+	move arms
+
+stand_1.db total 2448 records, 82.6346404552s long
+stand_2.db total 2062 records, 68.8218624592s long
+stand_3.db total 1174 records, 79.9607441425s long
+stand_4.db total 2874 records, 116.676546574s long
+	trying to stand on the line
+
