@@ -163,6 +163,13 @@ keyHandler = { | view, char, modifier, unicode, keycode |
 			{ ~debug = True; }
 		)
 	};
+
+	(char == $c).if {
+		~users.clear;
+		~skels.clear;
+		~joints.clear;
+		~skelColors.clear;
+	};
 };
 
 v.keyDownAction = keyHandler;
