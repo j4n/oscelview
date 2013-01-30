@@ -6,7 +6,7 @@ var circlesize = 10;
 ~width = 1024;
 ~height = 768;
 
-~users = Set.new;
+// ~users = Set.new; // currently not used
 ~skels = Set.new;
 ~joints = Dictionary.new;
 ~skelColors = Dictionary.new;
@@ -57,29 +57,31 @@ v.drawFunc = {
 			~skels.do { | user |
 				Pen.color = ~skelColors.at(user);
 				// draw a point for each joint of each user
-				~joints.at(user).keys.iter.do { | joint |
-					var coords = ~getCoords.value(user,joint);
-					Pen.addOval(
-						Rect(
-							coords.at(0)-(circlesize/2),
-							coords.at(1)-(circlesize/2),
-							circlesize, circlesize;
+				(~joints.includesKey(user)).if {
+					~joints.at(user).keys.iter.do { | joint |
+						var coords = ~getCoords.value(user,joint);
+						Pen.addOval(
+							Rect(
+								coords.at(0)-(circlesize/2),
+								coords.at(1)-(circlesize/2),
+								circlesize, circlesize;
+							);
 						);
-					);
 
-					if (
-						[joint].isSubsetOf(~emphasizedJoints),
-						{Pen.perform(\fill);},
-						{Pen.perform(\stroke);}
-					);
-
-					~jointLinks.do { | jointPair |
-						var coordsA = ~getCoords.value(user,jointPair[0]);
-						var coordsB = ~getCoords.value(user,jointPair[1]);
-						Pen.line(
-							coordsA.at(0)@coordsA.at(1),
-							coordsB.at(0)@coordsB.at(1)
+						if (
+							[joint].isSubsetOf(~emphasizedJoints),
+							{Pen.perform(\fill);},
+							{Pen.perform(\stroke);}
 						);
+
+						~jointLinks.do { | jointPair |
+							var coordsA = ~getCoords.value(user,jointPair[0]);
+							var coordsB = ~getCoords.value(user,jointPair[1]);
+							Pen.line(
+								coordsA.at(0)@coordsA.at(1),
+								coordsB.at(0)@coordsB.at(1)
+							);
+						};
 					};
 				}
 			};
@@ -100,16 +102,16 @@ v.drawFunc = {
 // OSC Processing:
 
 // handle user add/remove, skel add
-n = OSCFunc(
-	{
-		arg msg, time, addr, recvPort;
-		(~debug == True).if {
-			"user add ".post;
-			msg[1].postln;
-		};
-		~users.add(msg[1]);
-	}, '/new_user'
-);
+// n = OSCFunc(
+// 	{
+// 		arg msg, time, addr, recvPort;
+// 		(~debug == True).if {
+// 			"user add ".post;
+// 			msg[1].postln;
+// 		};
+// 		~users.add(msg[1]);
+// 	}, '/new_user'
+// );
 
 l = OSCFunc(
 	{
@@ -118,7 +120,7 @@ l = OSCFunc(
 			"user del ".post;
 			msg[1].postln;
 		};
-		~users.remove(msg[1]);
+		// ~users.remove(msg[1]);
 		~skels.remove(msg[1]);
 		~joints.remove(msg[1]);
 		~skelColors.remove(msg[1]);
@@ -142,7 +144,10 @@ s = OSCFunc(
 u = OSCFunc(
 	{
 		arg msg, time, addr, recvPort;
-		~joints.at(msg[2]).put(msg[1], [msg[3],msg[4],msg[5]]);
+		var user = msg[2];
+		~skels = ~skels.add(user); // make sure we have that one
+		if ((~joints.includesKey(user)).not, { ~joints.put(user,Dictionary.new); });
+		~joints.at(user).put(msg[1], [msg[3],msg[4],msg[5]]);
 	}, '/joint'
 );
 
@@ -165,7 +170,7 @@ keyHandler = { | view, char, modifier, unicode, keycode |
 	};
 
 	(char == $c).if {
-		~users.clear;
+		// ~users.clear;
 		~skels.clear;
 		~joints.clear;
 		~skelColors.clear;
@@ -180,7 +185,7 @@ w.front;
 
 s = {
 	// add sample data
-	~users = ~users.add(0);
+	// ~users = ~users.add(0);
 	~skels = ~skels.add(0);
 	~skelColors.put(0, Color.rand( 0.3,0.8));
 	~joints = ~joints.put(0,Dictionary.new);
