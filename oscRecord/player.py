@@ -31,11 +31,11 @@ class OSCPlayer:
         for i in r:
             if self.shelve.has_key(str(i)):
                 tmstmp=self.shelve[str(i)][0]
-                t += tmstmp
                 data=self.shelve[str(i)][1]
                 #print str(i) + " @ " + str(t) + " s +" + str(tmstmp) + " s " #+ str(data[:20])
                 print '% 8d @ % 8.4f s + %.4f s - %s' % (i,t,tmstmp,data[:30])
                 time.sleep(tmstmp)
+                t += tmstmp
                 self.s.sendto(data, (self.host, self.port))
         self.shelve.close()        
 
