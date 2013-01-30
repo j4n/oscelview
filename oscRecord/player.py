@@ -35,7 +35,6 @@ class OSCPlayer:
             if self.shelve.has_key(str(i)):
                 tmstmp=self.shelve[str(i)][0]
                 data=self.shelve[str(i)][1]
-                #print str(i) + " @ " + str(t) + " s +" + str(tmstmp) + " s " #+ str(data[:20])
                 print '% 8d @ % 8.4f s + %.4f s - %s' % (i,t,tmstmp,data[:30])
                 time.sleep(tmstmp)
                 t += tmstmp
@@ -60,6 +59,7 @@ if __name__ == "__main__":
 
         if len(sys.argv) >= 4:
             if len(sys.argv) >= 5:
+                # parse time pairs
                 for i in (range(len(sys.argv) - 4)):
                     [start,end] = map(int,(sys.argv[4+i]).split(','))
                     player.play(sys.argv[2], int(sys.argv[3]), start, end)
