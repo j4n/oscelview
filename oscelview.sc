@@ -103,16 +103,22 @@ v.drawFunc = {
 n = OSCFunc(
 	{
 		arg msg, time, addr, recvPort;
-		"user add ".post;
-		~users.add(msg[1]).postln;
+		(~debug == True).if {
+			"user add ".post;
+			msg[1].postln;
+		};
+		~users.add(msg[1]);
 	}, '/new_user'
 );
 
 l = OSCFunc(
 	{
 		arg msg, time, addr, recvPort;
-		"user del ".post;
-		~users.remove(msg[1]).postln;
+		(~debug == True).if {
+			"user del ".post;
+			msg[1].postln;
+		};
+		~users.remove(msg[1]);
 		~skels.remove(msg[1]);
 		~joints.remove(msg[1]);
 		~skelColors.remove(msg[1]);
