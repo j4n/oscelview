@@ -32,9 +32,11 @@ leave_3.db
 
 square_1.db
 	total 2829 records, 87.0680520535s long
-	trying to stand up
-	then rotating torso on the ground
-	trying to stand up again
+	stand up, rotate hip, step down
+		400-780
+	rotating torso on the ground (jitter!)
+		1100,1400
+	trying to rotate hip on line from 1400 on
 
 square_2.db
 	total 1559 records, 37.6732738018s long
