@@ -79,7 +79,7 @@ v.drawFunc = {
 							var coordsB = ~getCoords.value(user,jointPair[1]);
 							Pen.line(
 								coordsA.at(0)@coordsA.at(1),
-								coordsB.at(0)@coordsB.at(1)
+								coordsB.at(0)@coordsB.at(1);
 							);
 						};
 					};
