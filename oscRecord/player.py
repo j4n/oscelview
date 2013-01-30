@@ -30,7 +30,7 @@ class OSCPlayer:
             end = len(self.shelve)
 
         r = range(start,end);
-        t = 0
+        t = self.getreclength(start)
         for i in r:
             if self.shelve.has_key(str(i)):
                 tmstmp=self.shelve[str(i)][0]
@@ -40,11 +40,16 @@ class OSCPlayer:
                 t += tmstmp
                 self.s.sendto(data, (self.host, self.port))
 
-    def getreclength(self):
-        length = 0;
-        for r in self.shelve.values():
-            length += r[0]; 
-        print "total " + str(len(self.shelve)) + " records, " + str(length) + "s long"
+    def getreclength(self,end=-1):
+        length = 0
+        if (end == -1):
+            end = len(self.shelve)
+        for i in range(0,end):
+            length += self.shelve[str(i)][0]
+        return length
+
+    def printtotal(self):
+        print "total " + str(len(self.shelve)) + " records, " + str(self.getreclength()) + "s long"
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
@@ -55,7 +60,7 @@ if __name__ == "__main__":
         sys.exit(0)
     elif len(sys.argv) >= 2:
         player=OSCPlayer(sys.argv[1])
-        player.getreclength();
+        player.printtotal();
 
         if len(sys.argv) >= 4:
             if len(sys.argv) >= 5:
