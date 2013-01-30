@@ -15,6 +15,9 @@ class OSCPlayer:
         self.filename=filename
         self.shelve=shelve.open(self.filename)
 
+    def __del__(self):
+        self.shelve.close()        
+
     def play(self, host, port, start, end):
         self.host=host
         self.port=port
@@ -37,7 +40,6 @@ class OSCPlayer:
                 time.sleep(tmstmp)
                 t += tmstmp
                 self.s.sendto(data, (self.host, self.port))
-        self.shelve.close()        
 
     def getreclength(self):
         length = 0;
@@ -50,21 +52,19 @@ if __name__ == "__main__":
         print "usage: "
         print "    " + sys.argv[0] + " filename # (show info)"
         print "    " + sys.argv[0] + " filename host port # (play)"
-        print "    " + sys.argv[0] + " filename host port start end # (play subset)"
+        print "    " + sys.argv[0] + " filename host port start,end start,end# (play subsets)"
         sys.exit(0)
     elif len(sys.argv) >= 2:
         player=OSCPlayer(sys.argv[1])
         player.getreclength();
 
         if len(sys.argv) >= 4:
-            if len(sys.argv) == 6:
-                start = int(sys.argv[4])
-                end = int(sys.argv[5])
+            if len(sys.argv) >= 5:
+                print range(len(sys.argv)-4)
+                for i in (range(len(sys.argv) - 4)):
+                    [start,end] = map(int,(sys.argv[4+i]).split(','))
+                    player.play(sys.argv[2], int(sys.argv[3]), start, end)
             else:
                 start = -1
                 end = -1
-
-            player.play(sys.argv[2], int(sys.argv[3]), start, end)
-
-       
-    
+                player.play(sys.argv[2], int(sys.argv[3]), start, end)
