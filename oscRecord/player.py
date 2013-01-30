@@ -12,15 +12,16 @@ import gdbm
 
 class OSCPlayer:
     def __init__(self, filename):
-        self.filename=filename
-        self.shelve=shelve.open(self.filename)
+        self.filename = filename
+        self.shelve = shelve.open(self.filename)
+        self.speedup = 1#0 # want to go faster?
 
     def __del__(self):
         self.shelve.close()        
 
     def play(self, host, port, start, end):
-        self.host=host
-        self.port=port
+        self.host = host
+        self.port = port
         self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         if (start == -1):
@@ -36,7 +37,7 @@ class OSCPlayer:
                 tmstmp=self.shelve[str(i)][0]
                 data=self.shelve[str(i)][1]
                 print '% 8d @ % 8.4f s + %.4f s - %s' % (i,t,tmstmp,data[:30])
-                time.sleep(tmstmp)
+                time.sleep(tmstmp/self.speedup)
                 t += tmstmp
                 self.s.sendto(data, (self.host, self.port))
 
