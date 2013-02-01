@@ -1,6 +1,6 @@
 (
 var keyHandler;
-var circlesize = 2.5;
+var circlesize = 1.5;
 
 ~debug = False;
 ~width = 1024;
@@ -60,7 +60,7 @@ v.drawFunc = {
 				(~joints.includesKey(user)).if {
 					~joints.at(user).keys.iter.do { | joint |
 						var coords = ~getCoords.value(user,joint);
-						var cs = circlesize * ~joints.at(user).at(joint).at(2).squared;
+						var cs = (circlesize * ((5-~joints.at(user).at(joint).at(2)))).squared;
 						(~joints.at(user).includesKey(\l_hip)).if ({
 							~joints.at(user).at(\l_hip).at(2).post;
 							" ".post;
