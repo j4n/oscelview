@@ -1,3 +1,4 @@
+# actual datafiles are at http://fnor.de/~ja/recordings-20130126-slackline_gathering.tbz2
 chantal_1.db
 	total 9373 records, 335.592996597s long
 	good slackliner: 
@@ -60,6 +61,7 @@ stand_3.db
 	typical beginner movements
 	somewhat clean recording
 	low framerate some time
+	starts at 240
 	
 stand_4.db
 	total 2874 records, 116.676546574s long
