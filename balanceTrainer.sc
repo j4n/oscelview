@@ -21,11 +21,35 @@ SynthDef( \trainer, { |pulse = 0, mix = 0|
 
 	var lo, hi, in;
 
-	in = Decay2.ar(Impulse.ar( pulse.linlin(0.0, 1.0, 0.333, 10.0) ), pulse.linexp(0.0, 1.0, 0.001, 0.17), 0.2 ) * BrownNoise.ar(0.1);
-	lo = {DynKlank.ar(`[ ({|i|if(i==0,{1},{i})}!40).clump(2).flop[0], {|i|1/20}!20 , 1!20 ], in, freqscale: 25,  freqoffset: 100,  decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1) ) * 0.4}!2;
-	hi = {DynKlank.ar(`[ ({|i|if(i==0,{1},{i})}!40).clump(2).flop[1], {|i|1/20}!20 , 1!20 ], in, freqscale: 100, freqoffset: 100,  decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1) ) * 0.4}!2;
+	in = Decay2.ar(
+		Impulse.ar( pulse.linlin(0.0, 1.0, 0.333, 10.0) ),
+		pulse.linexp(0.0, 1.0, 0.001, 0.17), 0.2
+	) * BrownNoise.ar(0.1);
 
-	Out.ar(0, XFade2.ar(lo, hi, mix.linlin(0.0, 1.0, -1, 1)) );
+	lo = {
+		DynKlank.ar(
+			`[ ( { |i|if(i==0,{1},{i})}!40).clump(2).flop[0],
+				{ |i|1/20}!20 ,
+				1!20 ],
+			in,
+			freqscale: 25,
+			freqoffset: 100,
+			decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1)
+		) * 0.4
+	}!2;
+
+	hi = {
+		DynKlank.ar(
+			`[ ({|i|if(i==0,{1},{i})}!40).clump(2).flop[1],
+				{|i|1/20}!20 , 1!20 ],
+			in,
+			freqscale: 100,
+			freqoffset: 100,
+			decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1)
+		) * 0.4
+	}!2;
+
+	Out.ar(0, XFade2.ar(lo, hi, mix.linlin(0.0, 1.0, -1, 1)));
 
 }).add
 )
