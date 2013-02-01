@@ -16,7 +16,7 @@ f.pause
 s.freeAll()
 
 (
-SynthDef( \trainer, { |pulse = 0, mix = 0|
+SynthDef( \trainer, { |pulse, mixL, mixR |
 
 	var lo, hi, in;
 
@@ -49,9 +49,10 @@ SynthDef( \trainer, { |pulse = 0, mix = 0|
 			freqoffset: 100,
 			decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1)
 		) * 0.4
-	}!2;
+	};
 
-	Out.ar(0, XFade2.ar(lo, hi, mix.linlin(0.0, 1.0, -1, 1)));
+	Out.ar(0, XFade2.ar(lo, hi, mixL.linlin(0.0, 1.0, -1, 1)));
+	Out.ar(1, XFade2.ar(lo, hi, mixR.linlin(0.0, 1.0, -1, 1)));
 
 }).add
 )
@@ -59,8 +60,36 @@ SynthDef( \trainer, { |pulse = 0, mix = 0|
 
 // start synth
 
-~trainer = Synth(\trainer, [\pulse, 0.0, \mix, 0.5]) // starting exercise sound only occasionally
+~trainer = Synth(\trainer, [\pulse, 0.0, \mixL, 0.5, \mixR, 0.5]) // starting exercise sound only occasionally
 ~trainer.free
+
+// multichannel
+// moving upper body down, change ion timbre
+~trainer.setn(\pulse, 0.0, \mix, 0.0)
+
+// bending knees change in speed and timbre
+~trainer.setn(\pulse, 0.3, \mixL, 0.0, \mixR, 0.0)
+~trainer.setn(\pulse, 0.6, \mixL, 0.0, \mixR, 0.0)
+~trainer.setn(\pulse, 0.9, \mixL, 0.0, \mixR, 0.0)
+
+// ideal position (knees bent upper body low)
+~trainer.setn(\pulse, 1, \mixL, 0.5, \mixR, 1.0)  // sound disappears
+
+// knees bent but upper body going straight
+~trainer.setn(\pulse, 1.0, \mixL, 0.2, \mixR, 0.2)
+~trainer.setn(\pulse, 1.0, \mixL, 0.6, \mixR, 0.6)
+~trainer.setn(\pulse, 1.0, \mixL, 1.0, \mixR, 1.0)
+
+// set both variables
+~trainer.setn(\pulse, 1.0, \mixL, 1.0, \mixR, 1.0)
+~trainer.setn(\pulse, 1.0, \mixL, 0.0, \mixR, 1.0)
+
+// set them individually
+~trainer.set(\pulse, 1)
+~trainer.set(\mixL, 0.0)
+~trainer.set(\mixR, 0.0)
+
+// singlechannel
 // moving upper body down, change ion timbre
 ~trainer.setn(\pulse, 0.0, \mix, 0.0)
 
@@ -84,6 +113,3 @@ SynthDef( \trainer, { |pulse = 0, mix = 0|
 // set them individually
 ~trainer.set(\pulse, 1)
 ~trainer.set(\mix, 0.0)
-
-~trainer.set(\pulse, MouseX.kr(-1,1))
-
