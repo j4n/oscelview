@@ -52,12 +52,15 @@ class OSCPlayer:
     def printtotal(self):
         print "total " + str(len(self.shelve)) + " records, " + str(self.getreclength()) + "s long"
 
-if __name__ == "__main__":
-    if len(sys.argv) == 1:
+def printusage():
         print "usage: "
         print "    " + sys.argv[0] + " filename # (show info)"
         print "    " + sys.argv[0] + " filename host port # (play)"
         print "    " + sys.argv[0] + " filename host port start,end start,-1# (play subsets)"
+
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        printusage();
         sys.exit(0)
     elif len(sys.argv) >= 2:
         player=OSCPlayer(sys.argv[1])
@@ -67,8 +70,11 @@ if __name__ == "__main__":
             if len(sys.argv) >= 5:
                 # parse time pairs
                 for i in (range(len(sys.argv) - 4)):
-                    [start,end] = map(int,(sys.argv[4+i]).split(','))
-                    player.play(sys.argv[2], int(sys.argv[3]), start, end)
+                    try:
+                        [start,end] = map(int,(sys.argv[4+i]).split(','))
+                        player.play(sys.argv[2], int(sys.argv[3]), start, end)
+                    except ValueError:
+                        printusage()
             else:
                 start = -1
                 end = -1
