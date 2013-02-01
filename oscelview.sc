@@ -1,6 +1,6 @@
 (
 var keyHandler;
-var circlesize = 10;
+var circlesize = 2.5;
 
 ~debug = False;
 ~width = 1024;
@@ -60,11 +60,19 @@ v.drawFunc = {
 				(~joints.includesKey(user)).if {
 					~joints.at(user).keys.iter.do { | joint |
 						var coords = ~getCoords.value(user,joint);
+						var cs = circlesize * ~joints.at(user).at(joint).at(2).squared;
+						(~joints.at(user).includesKey(\l_hip)).if ({
+							~joints.at(user).at(\l_hip).at(2).post;
+							" ".post;
+							(~joints.at(user).at(\l_knee).at(2)).post;
+							" ".post;
+							(~joints.at(user).at(\l_knee).at(2) - (~joints.at(user).at(\l_hip).at(2))).postln;
+						});
 						Pen.addOval(
 							Rect(
-								coords.at(0)-(circlesize/2),
-								coords.at(1)-(circlesize/2),
-								circlesize, circlesize;
+								coords.at(0)-(cs/2),
+								coords.at(1)-(cs/2),
+								cs, cs;
 							);
 						);
 
