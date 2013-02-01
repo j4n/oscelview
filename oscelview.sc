@@ -61,13 +61,13 @@ v.drawFunc = {
 					~joints.at(user).keys.iter.do { | joint |
 						var coords = ~getCoords.value(user,joint);
 						var cs = (circlesize * ((5-~joints.at(user).at(joint).at(2)))).squared;
-						(~joints.at(user).includesKey(\l_hip)).if ({
+						/*(~joints.at(user).includesKey(\l_hip)).if ({
 							~joints.at(user).at(\l_hip).at(2).post;
 							" ".post;
 							(~joints.at(user).at(\l_knee).at(2)).post;
 							" ".post;
 							(~joints.at(user).at(\l_knee).at(2) - (~joints.at(user).at(\l_hip).at(2))).postln;
-						});
+						});*/
 						Pen.addOval(
 							Rect(
 								coords.at(0)-(cs/2),
@@ -190,7 +190,8 @@ v.keyDownAction = keyHandler;
 v.animate = true;
 v.frameRate = 30;
 w.front;
-
+)
+(
 s = {
 	// add sample data
 	// ~users = ~users.add(0);
