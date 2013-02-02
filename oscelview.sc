@@ -44,6 +44,45 @@ v.background_(Color.grey(0.97));
 	];
 };
 
+~norm = { |vect|
+	var norm = 0;
+	vect.do { | item, index |
+		norm = norm + item.squared;
+	};
+	norm.sqrt;
+};
+
+~dot = { | v1, v2 |
+	var product = 0;
+	var comp = v1.size;
+	comp.do { | i |
+		product = v1.at(i) * v2.at(i);
+	};
+	product;
+};
+
+~getKneeAngles = { | user |
+	var angles;
+	var rShank,lShank,rThigh,lThigh,rAngle,lAngle;
+
+	// set up vectors
+	rThigh = ~joints.at(user).at(\r_hip) - ~joints.at(user).at(\r_knee);
+	lThigh = ~joints.at(user).at(\l_hip) - ~joints.at(user).at(\l_knee);
+	rShank = ~joints.at(user).at(\r_knee) - ~joints.at(user).at(\r_foot);
+	lShank = ~joints.at(user).at(\l_knee) - ~joints.at(user).at(\l_foot);
+
+
+	rAngle = (
+		(~dot.value(rThigh,rShank))/
+		(~norm.value(rThigh)*~norm.value(rShank))
+	).acos;
+	lAngle = (
+		(~dot.value(lThigh,lShank)/
+		(~norm.value(lThigh)*~norm.value(lShank)))
+	).acos;
+	angles = [lAngle*180/3.141,rAngle*180/3.141];
+};
+
 // draw the skeletons
 v.drawFunc = {
 	if (
@@ -91,7 +130,8 @@ v.drawFunc = {
 							);
 						};
 					};
-				}
+				};
+				~getKneeAngles.value(user).postln();
 			};
 		},
 		{
@@ -159,6 +199,51 @@ u = OSCFunc(
 	}, '/joint'
 );
 
+SynthDef( \trainer, { |pulse, mixL, mixR |
+
+	var lo, hi, in;
+
+	// two resonator banks, one high one low in frequency
+	// being excited at a variable \pulse rat that also affects the resonance frequency
+	// and combined at ratio \mix between the high/low frequency
+	in = Decay2.ar(
+		Impulse.ar( pulse.linlin(0.0, 1.0, 0.333, 10.0) ),
+		pulse.linexp(0.0, 1.0, 0.001, 0.17), 0.2
+	) * BrownNoise.ar(0.1);
+
+	lo = {
+		DynKlank.ar(
+			`[ ( { |i|if(i==0,{1},{i})}!40).clump(2).flop[0],
+				{ |i|1/20}!20 ,
+				1!20 ],
+			in,
+			freqscale: 25,
+			freqoffset: 100,
+			decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1)
+		) * 0.4
+	}!2;
+
+	hi = {
+		DynKlank.ar(
+			`[ ({|i|if(i==0,{1},{i})}!40).clump(2).flop[1],
+				{|i|1/20}!20 , 1!20 ],
+			in,
+			freqscale: 100,
+			freqoffset: 100,
+			decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1)
+		) * 0.4
+	};
+
+	Out.ar(0, XFade2.ar(lo, hi, mixL.linlin(0.0, 1.0, -1, 1)));
+	Out.ar(1, XFade2.ar(lo, hi, mixR.linlin(0.0, 1.0, -1, 1)));
+
+}).add;
+
+// initial synth setup
+~trainer = Synth(\trainer, [\pulse, 0.0, \mixL, 0.5, \mixR, 0.5]); // starting exercise sound only occasionally
+~trainer.setn(\pulse, 1, \mixL, 0.5, \mixR, 1.0);  // sound disappears
+
+
 keyHandler = { | view, char, modifier, unicode, keycode |
 	(unicode == 27).if { // escape key quits
 		n.free;
@@ -166,6 +251,7 @@ keyHandler = { | view, char, modifier, unicode, keycode |
 		s.free;
 		o.free;    //c remove the OSCresponderNode when you are done.
 		v.animate = false; //animation can be paused and resumed
+		~trainer.free;
 		w.close;
 	};
 
@@ -182,6 +268,7 @@ keyHandler = { | view, char, modifier, unicode, keycode |
 		~skels.clear;
 		~joints.clear;
 		~skelColors.clear;
+		~trainer.free;
 	};
 };
 
