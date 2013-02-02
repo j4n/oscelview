@@ -56,14 +56,25 @@ v.background_(Color.grey(0.97));
 	var product = 0;
 	var comp = v1.size;
 	comp.do { | i |
-		product = v1.at(i) * v2.at(i);
+		product = product + (v1.at(i) * v2.at(i));
 	};
 	product;
 };
 
+~getAngle = { | v1, v2 |
+	(
+		(~dot.value(v1,v2)/
+		(~norm.value(v1)*~norm.value(v2)))
+	).acos;
+};
+
+~getAngleDegrees = { | v1, v2 |
+	~getAngle.value(v1,v2) * 180 / 3.14159265359;
+};
+
 ~getKneeAngles = { | user |
 	var angles;
-	var rShank,lShank,rThigh,lThigh,rAngle,lAngle;
+	var rShank,lShank,rThigh,lThigh;
 
 	// set up vectors
 	rThigh = ~joints.at(user).at(\r_hip) - ~joints.at(user).at(\r_knee);
@@ -71,16 +82,10 @@ v.background_(Color.grey(0.97));
 	rShank = ~joints.at(user).at(\r_knee) - ~joints.at(user).at(\r_foot);
 	lShank = ~joints.at(user).at(\l_knee) - ~joints.at(user).at(\l_foot);
 
-
-	rAngle = (
-		(~dot.value(rThigh,rShank))/
-		(~norm.value(rThigh)*~norm.value(rShank))
-	).acos;
-	lAngle = (
-		(~dot.value(lThigh,lShank)/
-		(~norm.value(lThigh)*~norm.value(lShank)))
-	).acos;
-	angles = [lAngle*180/3.141,rAngle*180/3.141];
+	angles = [
+		~getAngleDegrees.value(rThigh,rShank),
+		~getAngleDegrees.value(lThigh,lShank)
+	];
 };
 
 // draw the skeletons
