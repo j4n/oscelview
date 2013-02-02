@@ -78,8 +78,8 @@ v.background_(Color.grey(0.97));
 
 	// set up vectors
 	rThigh = ~joints.at(user).at(\r_hip) - ~joints.at(user).at(\r_knee);
-	lThigh = ~joints.at(user).at(\l_hip) - ~joints.at(user).at(\l_knee);
 	rShank = ~joints.at(user).at(\r_knee) - ~joints.at(user).at(\r_foot);
+	lThigh = ~joints.at(user).at(\l_hip) - ~joints.at(user).at(\l_knee);
 	lShank = ~joints.at(user).at(\l_knee) - ~joints.at(user).at(\l_foot);
 
 	angles = [
@@ -136,7 +136,7 @@ v.drawFunc = {
 						};
 					};
 				};
-				~getKneeAngles.value(user).postln();
+				~getKneeAngles.value(user).postln;
 			};
 		},
 		{
