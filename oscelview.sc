@@ -2,9 +2,11 @@
 var keyHandler;
 var circlesize = 1.5;
 
-~debug = False;
+~debug = True;
 ~width = 1024;
 ~height = 768;
+
+~piconst = 3.14159265359; // sic
 
 // ~users = Set.new; // currently not used
 ~skels = Set.new;
@@ -25,8 +27,8 @@ var circlesize = 1.5;
 	[\torso, \r_hip],
 	[\l_hip, \r_hip],
 	[\l_hip, \l_knee],
-	[\r_hip, \r_knee],
 	[\l_knee, \l_foot],
+	[\r_hip, \r_knee],
 	[\r_knee, \r_foot]
 ];
 
@@ -68,24 +70,33 @@ v.background_(Color.grey(0.97));
 	).acos;
 };
 
+
 ~getAngleDegrees = { | v1, v2 |
-	~getAngle.value(v1,v2) * 180 / 3.14159265359;
+	~getAngle.value(v1,v2) * 180 / ~piconst;
 };
 
-~getKneeAngles = { | user |
-	var angles;
-	var rShank,lShank,rThigh,lThigh;
+~getLimbs = { | user |
+	var limbs = Dictionary.newFrom(List[
+		\rThigh, ~joints.at(user).at(\r_hip) - ~joints.at(user).at(\r_knee),
+		\rShank, ~joints.at(user).at(\r_knee) - ~joints.at(user).at(\r_foot),
+		\lThigh, ~joints.at(user).at(\l_hip) - ~joints.at(user).at(\l_knee),
+		\lShank, ~joints.at(user).at(\l_knee) - ~joints.at(user).at(\l_foot)
+	]);
+	limbs;
+};
 
-	// set up vectors
-	rThigh = ~joints.at(user).at(\r_hip) - ~joints.at(user).at(\r_knee);
-	rShank = ~joints.at(user).at(\r_knee) - ~joints.at(user).at(\r_foot);
-	lThigh = ~joints.at(user).at(\l_hip) - ~joints.at(user).at(\l_knee);
-	lShank = ~joints.at(user).at(\l_knee) - ~joints.at(user).at(\l_foot);
+~getKneeAngles = { | user, limbs |
+	var angles;
 
 	angles = [
-		~getAngleDegrees.value(rThigh,rShank),
-		~getAngleDegrees.value(lThigh,lShank)
+		~getAngleDegrees.value(limbs.at(\rThigh),limbs.at(\rShank)),
+		~getAngleDegrees.value(limbs.at(\lThigh),limbs.at(\lShank))
 	];
+
+	(~debug == True).if {
+		" knee angles r/l: ".post;
+		angles.post;
+	};
 };
 
 // draw the skeletons
@@ -99,6 +110,7 @@ v.drawFunc = {
 			};
 
 			~skels.do { | user |
+				var limbs, kneeAngles;
 				Pen.color = ~skelColors.at(user);
 				// draw a point for each joint of each user
 				(~joints.includesKey(user)).if {
@@ -129,14 +141,64 @@ v.drawFunc = {
 						~jointLinks.do { | jointPair |
 							var coordsA = ~getCoords.value(user,jointPair[0]);
 							var coordsB = ~getCoords.value(user,jointPair[1]);
+
+							// debug left knee
+							if (
+								(~debug == True) and: (([\l_hip, \l_knee].isSubsetOf(jointPair)) or: ([\l_knee, \l_foot].isSubsetOf(jointPair))),
+								{
+									Pen.width = 5;
+									Pen.color = ~skelColors.at(user).complementary;
+								},
+								{
+									Pen.width = 1;
+									Pen.color = ~skelColors.at(user);
+								}
+							);
+
 							Pen.line(
 								coordsA.at(0)@coordsA.at(1),
 								coordsB.at(0)@coordsB.at(1);
 							);
+						    Pen.fillStroke;
+
 						};
 					};
 				};
-				~getKneeAngles.value(user).postln;
+
+				limbs = ~getLimbs.value(user);
+				kneeAngles = ~getKneeAngles.value(user, limbs);
+
+				(~debug == True).if {
+					var r = 50;
+					var offset = 20;
+					// debug left knee
+					var jointAngle = (180 - kneeAngles.at(1)) / 180 * ~piconst; // joint angle in radians
+
+					Pen.color = ~skelColors.at(user).complementary;
+					Pen.addOval(
+						Rect(
+							offset,
+							(offset*user),
+							2*r, 2*r;
+						);
+					);
+					Pen.perform(\stroke);
+
+					// vertical dial
+					Pen.line(
+						(offset+r)@(offset+r),
+						(offset+r)@offset
+					);
+				    Pen.perform(\stroke);
+
+					// angle dial
+					Pen.line(
+						(offset+r)@(offset+r),
+						((offset+r)+(jointAngle.sin*r))@((offset+r)-((jointAngle.cos*r)))
+					);
+				    Pen.perform(\stroke);
+					Pen.color = ~skelColors.at(user);
+				};
 			};
 		},
 		{
@@ -200,6 +262,7 @@ u = OSCFunc(
 		var user = msg[2];
 		~skels = ~skels.add(user); // make sure we have that one
 		if ((~joints.includesKey(user)).not, { ~joints.put(user,Dictionary.new); });
+		if ((~skelColors.includesKey(user)).not, { ~skelColors.put(user,Color.rand( 0.3,0.8)); });
 		~joints.at(user).put(msg[1], [msg[3],msg[4],msg[5]]);
 	}, '/joint'
 );
