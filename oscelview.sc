@@ -31,7 +31,6 @@ var circlesize = 1.5;
 	[\r_hip, \r_knee],
 	[\r_knee, \r_foot]
 ];
-
 ~emphasizedJoints = Set[\head, \l_hand, \r_hand, \l_foot, \r_foot];
 
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
@@ -81,23 +80,20 @@ v.frameRate = 10;
 		\rThigh, ~joints.at(user).at(\r_hip) - ~joints.at(user).at(\r_knee),
 		\rShank, ~joints.at(user).at(\r_knee) - ~joints.at(user).at(\r_foot),
 		\lThigh, ~joints.at(user).at(\l_hip) - ~joints.at(user).at(\l_knee),
-		\lShank, ~joints.at(user).at(\l_knee) - ~joints.at(user).at(\l_foot),
+		\lShank, ~joints.at(user).at(\l_knee) - ~joints.at(user).at(\l_foot)
 	]);
 	limbs;
 };
 
-~getBodyAxis = { | user |
-	var axis;// = ~joints.at(user).at(\neck) - ~joints.at(user).at(\torso);
-	axis;
+~getBodyLean = { | user |
+	// ok whatever, just q&d:
+	// what we really want is the x difference between the neck and the torso
+	// scaled by should width
+	var scale = (~joints.at(user).at(\r_shoulder).at(0) - ~joints.at(user).at(\l_shoulder).at(0))/2;
+	var xdiff = ~joints.at(user).at(\neck).at(0) - ~joints.at(user).at(\torso).at(0);
+	var lean = xdiff/scale;
+	lean;
 };
-
-~getTorsoAngle = { | user, axis |
-	var a, angle;
-	a = ~dot.value(axis,[0, 0, 1]);
-	angle = [0, 0, a*1];
-	angle.postln;
-};
-
 
 ~getKneeAngles = { | user, limbs |
 	var angles;
@@ -124,7 +120,7 @@ v.drawFunc = {
 			};
 
 			~skels.do { | user |
-				var axis, axisAngle, limbs, kneeAngles;
+				var bodyLean, limbs, kneeAngles;
 				Pen.color = ~skelColors.at(user);
 				// draw a point for each joint of each user
 				(~joints.includesKey(user)).if {
@@ -138,6 +134,7 @@ v.drawFunc = {
 							" ".post;
 							(~joints.at(user).at(\l_knee).at(2) - (~joints.at(user).at(\l_hip).at(2))).postln;
 						});*/
+
 						Pen.addOval(
 							Rect(
 								coords.at(0)-(cs/2),
@@ -181,8 +178,8 @@ v.drawFunc = {
 
 				limbs = ~getLimbs.value(user);
 				kneeAngles = ~getKneeAngles.value(user, limbs);
-				//axis = ~getBodyAxis.value(user);
-				//axisAngle = ~getBodyAngle.value(user, axis);
+				bodyLean = ~getBodyAngle.value(user);
+				// bodyLean.postln;
 
 				(~debug == True).if {
 					var r = 50;
