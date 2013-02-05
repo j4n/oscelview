@@ -2,7 +2,7 @@
 var keyHandler;
 var circlesize = 1.5;
 
-~debug = True;
+~debug = False;
 ~width = 1024;
 ~height = 768;
 
@@ -37,6 +37,7 @@ var circlesize = 1.5;
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
 v = UserView(w, w.view.bounds);
 v.background_(Color.grey(0.97));
+v.frameRate = 10;
 
 // compute absolute coords in userview
 ~getCoords = { | user, joint |
@@ -80,9 +81,14 @@ v.background_(Color.grey(0.97));
 		\rThigh, ~joints.at(user).at(\r_hip) - ~joints.at(user).at(\r_knee),
 		\rShank, ~joints.at(user).at(\r_knee) - ~joints.at(user).at(\r_foot),
 		\lThigh, ~joints.at(user).at(\l_hip) - ~joints.at(user).at(\l_knee),
-		\lShank, ~joints.at(user).at(\l_knee) - ~joints.at(user).at(\l_foot)
+		\lShank, ~joints.at(user).at(\l_knee) - ~joints.at(user).at(\l_foot),
 	]);
 	limbs;
+};
+
+~getBodyAxis = { | user |
+	var axis;
+
 };
 
 ~getKneeAngles = { | user, limbs |
