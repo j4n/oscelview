@@ -87,9 +87,17 @@ v.frameRate = 10;
 };
 
 ~getBodyAxis = { | user |
-	var axis;
-
+	var axis;// = ~joints.at(user).at(\neck) - ~joints.at(user).at(\torso);
+	axis;
 };
+
+~getTorsoAngle = { | user, axis |
+	var a, angle;
+	a = ~dot.value(axis,[0, 0, 1]);
+	angle = [0, 0, a*1];
+	angle.postln;
+};
+
 
 ~getKneeAngles = { | user, limbs |
 	var angles;
@@ -116,7 +124,7 @@ v.drawFunc = {
 			};
 
 			~skels.do { | user |
-				var limbs, kneeAngles;
+				var axis, axisAngle, limbs, kneeAngles;
 				Pen.color = ~skelColors.at(user);
 				// draw a point for each joint of each user
 				(~joints.includesKey(user)).if {
@@ -173,6 +181,8 @@ v.drawFunc = {
 
 				limbs = ~getLimbs.value(user);
 				kneeAngles = ~getKneeAngles.value(user, limbs);
+				//axis = ~getBodyAxis.value(user);
+				//axisAngle = ~getBodyAngle.value(user, axis);
 
 				(~debug == True).if {
 					var r = 50;
