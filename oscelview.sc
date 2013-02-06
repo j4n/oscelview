@@ -5,6 +5,7 @@ var circlesize = 1.5;
 
 // todo fix line widths in debug mode
 // todo fix debug dial position
+// todo fix debug dial l/r
 // todo comment
 // todo fix nil thing on real data
 // todo angles are not right: that should be 180-angle
@@ -169,7 +170,11 @@ v.drawFunc = {
 
 							// debug left knee
 							if (
-								(~debug == True) and: (([\r_hip, \r_knee].isSubsetOf(jointPair)) or: ([\r_knee, \r_foot].isSubsetOf(jointPair))),
+								(~debug == True) and:
+								(
+									([\r_hip, \r_knee].isSubsetOf(jointPair)) or:
+									([\r_knee, \r_foot].isSubsetOf(jointPair))
+								),
 								{
 									Pen.width = 5;
 									Pen.color = ~skelColors.at(user).complementary;
@@ -201,7 +206,7 @@ v.drawFunc = {
 					var r = 50;
 					var offset = 20;
 					// debug left knee
-					var jointAngle = (180 - kneeAngles.at(1)) / 180 * ~piconst; // joint angle in radians
+					var jointAngle = (180 - kneeAngles.at(~kneeOfInterest)) / 180 * ~piconst; // joint angle in radians
 
 					Pen.color = ~skelColors.at(user).complementary;
 					Pen.addOval(
