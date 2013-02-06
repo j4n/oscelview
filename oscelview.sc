@@ -1,4 +1,5 @@
 (
+
 var keyHandler;
 var circlesize = 1.5;
 
@@ -280,50 +281,55 @@ u = OSCFunc(
 	}, '/joint'
 );
 
-SynthDef( \trainer, { |pulse, mixL, mixR |
+Server.default = s = Server.internal;
+// s.quit;
+// s.boot;
+s.waitForBoot{
 
-	var lo, hi, in;
+	SynthDef( \trainer, { |pulse, mixL, mixR |
 
-	// two resonator banks, one high one low in frequency
-	// being excited at a variable \pulse rat that also affects the resonance frequency
-	// and combined at ratio \mix between the high/low frequency
-	in = Decay2.ar(
-		Impulse.ar( pulse.linlin(0.0, 1.0, 0.333, 10.0) ),
-		pulse.linexp(0.0, 1.0, 0.001, 0.17), 0.2
-	) * BrownNoise.ar(0.1);
+		var lo, hi, in;
 
-	lo = {
-		DynKlank.ar(
-			`[ ( { |i|if(i==0,{1},{i})}!40).clump(2).flop[0],
-				{ |i|1/20}!20 ,
-				1!20 ],
-			in,
-			freqscale: 25,
-			freqoffset: 100,
-			decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1)
-		) * 0.4
-	}!2;
+		// two resonator banks, one high one low in frequency
+		// being excited at a variable \pulse rat that also affects the resonance frequency
+		// and combined at ratio \mix between the high/low frequency
+		in = Decay2.ar(
+			Impulse.ar( pulse.linlin(0.0, 1.0, 0.333, 10.0) ),
+			pulse.linexp(0.0, 1.0, 0.001, 0.17), 0.2
+		) * BrownNoise.ar(0.1);
 
-	hi = {
-		DynKlank.ar(
-			`[ ({|i|if(i==0,{1},{i})}!40).clump(2).flop[1],
-				{|i|1/20}!20 , 1!20 ],
-			in,
-			freqscale: 100,
-			freqoffset: 100,
-			decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1)
-		) * 0.4
-	};
+		lo = {
+			DynKlank.ar(
+				`[ ( { |i|if(i==0,{1},{i})}!40).clump(2).flop[0],
+					{ |i|1/20}!20 ,
+					1!20 ],
+				in,
+				freqscale: 25,
+				freqoffset: 100,
+				decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1)
+			) * 0.4
+		}!2;
 
-	Out.ar(0, XFade2.ar(lo, hi, mixL.linlin(0.0, 1.0, -1, 1)));
-	Out.ar(1, XFade2.ar(lo, hi, mixR.linlin(0.0, 1.0, -1, 1)));
+		hi = {
+			DynKlank.ar(
+				`[ ({|i|if(i==0,{1},{i})}!40).clump(2).flop[1],
+					{|i|1/20}!20 , 1!20 ],
+				in,
+				freqscale: 100,
+				freqoffset: 100,
+				decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1)
+			) * 0.4
+		};
 
-}).add;
+		Out.ar(0, XFade2.ar(lo, hi, mixL.linlin(0.0, 1.0, -1, 1)));
+		Out.ar(1, XFade2.ar(lo, hi, mixR.linlin(0.0, 1.0, -1, 1)));
 
-// initial synth setup
-~trainer = Synth(\trainer, [\pulse, 0.0, \mixL, 0.5, \mixR, 0.5]); // starting exercise sound only occasionally
-~trainer.setn(\pulse, 1, \mixL, 0.5, \mixR, 1.0);  // sound disappears
+	}).add;
 
+	// initial synth setup
+	~trainer = Synth(\trainer, [\pulse, 0.0, \mixL, 0.5, \mixR, 0.5]); // starting exercise sound only occasionally
+	~trainer.setn(\pulse, 1, \mixL, 0.5, \mixR, 1.0);  // sound disappears
+};
 
 keyHandler = { | view, char, modifier, unicode, keycode |
 	(unicode == 27).if { // escape key quits
@@ -333,6 +339,7 @@ keyHandler = { | view, char, modifier, unicode, keycode |
 		o.free;    //c remove the OSCresponderNode when you are done.
 		v.animate = false; //animation can be paused and resumed
 		~trainer.free;
+		s.freeAll;
 		w.close;
 	};
 
