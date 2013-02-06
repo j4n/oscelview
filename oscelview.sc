@@ -4,10 +4,13 @@ var keyHandler;
 var circlesize = 1.5;
 
 // todo fix line widths in debug mode
+// todo fix debug dial position
 // todo comment
 // todo fix nil thing on real data
+// todo angles are not right: that should be 180-angle
+//      or something like that. display is correct though
 
-~debug = True;
+~debug = False;
 ~width = 1024;
 ~height = 768;
 
@@ -117,7 +120,7 @@ v.frameRate = 10;
 		" knee angles r/l: ".post;
 		angles.post;
 	};
-	angles
+	angles;
 };
 
 // draw the skeletons
@@ -190,7 +193,7 @@ v.drawFunc = {
 				// parameter mapping sonification
 				limbs = ~getLimbs.value(user);
 				kneeAngles = ~getKneeAngles.value(user, limbs);
-				bodyLean = ~getBodyAngle.value(user);
+				bodyLean = ~getBodyLean.value(user);
 				~trainer.setn(\balance, bodyLean, \mix, bodyLean);
 				~trainer.setn(\pulse, kneeAngles[~kneeOfInterest].linlin(~minbend,~maxbend,0.25,1));
 
