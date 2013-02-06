@@ -71,7 +71,7 @@ SynthDef( \trainer, { |pulse, balance=0, mix=0.5 |
 ~trainer.setn(\pulse, 1, \balance, 0)  // sound disappears
 ~trainer.free
 
-b = -0.5;
+b = 0;
 ~trainer.setn(\balance, b, \mix, b)
 // our mapping is:
 // knee bend -> \pulse

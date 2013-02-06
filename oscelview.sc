@@ -3,11 +3,20 @@
 var keyHandler;
 var circlesize = 1.5;
 
-~debug = False;
+// todo fix line widths in debug mode
+// todo comment
+// todo fix nil thing on real data
+
+~debug = True;
 ~width = 1024;
 ~height = 768;
 
+~kneeOfInterest = 0; // [right,left]
+
 ~piconst = 3.14159265359; // sic
+~maxlean = 0.4; // empiric maximum value for body lean
+~minbend = 0; // empiric maximum value for knee bend in degrees
+~maxbend = 45; // empiric maximum value for knee bend in degrees
 
 // ~users = Set.new; // currently not used
 ~skels = Set.new;
@@ -108,6 +117,7 @@ v.frameRate = 10;
 		" knee angles r/l: ".post;
 		angles.post;
 	};
+	angles
 };
 
 // draw the skeletons
@@ -156,7 +166,7 @@ v.drawFunc = {
 
 							// debug left knee
 							if (
-								(~debug == True) and: (([\l_hip, \l_knee].isSubsetOf(jointPair)) or: ([\l_knee, \l_foot].isSubsetOf(jointPair))),
+								(~debug == True) and: (([\r_hip, \r_knee].isSubsetOf(jointPair)) or: ([\r_knee, \r_foot].isSubsetOf(jointPair))),
 								{
 									Pen.width = 5;
 									Pen.color = ~skelColors.at(user).complementary;
@@ -177,10 +187,12 @@ v.drawFunc = {
 					};
 				};
 
+				// parameter mapping sonification
 				limbs = ~getLimbs.value(user);
 				kneeAngles = ~getKneeAngles.value(user, limbs);
 				bodyLean = ~getBodyAngle.value(user);
-				// bodyLean.postln;
+				~trainer.setn(\balance, bodyLean, \mix, bodyLean);
+				~trainer.setn(\pulse, kneeAngles[~kneeOfInterest].linlin(~minbend,~maxbend,0.25,1));
 
 				(~debug == True).if {
 					var r = 50;
@@ -326,8 +338,8 @@ s.waitForBoot{
 		// balance adjusts how much we hear of the two synths
 		// mix the mixture of lo and hi
 
-		Out.ar(0,XFade2.ar(lo[0], hi[0], mix.neg.linlin(-1, 1, -0.75, 0.75))*balance.neg.linlin(-1,1,0,1));
-		Out.ar(1,XFade2.ar(lo[1], hi[1], mix.linlin(-1, 1, -0.75, 0.75))*balance.linlin(-1,1,0,1));
+		Out.ar(0,XFade2.ar(lo[0], hi[0], mix.neg.linlin(~maxlean.neg, ~maxlean, -1,1))*balance.neg.linlin(~maxlean.neg,~maxlean,0,1));
+		Out.ar(1,XFade2.ar(lo[1], hi[1], mix.linlin(~maxlean.neg, ~maxlean, -1,1))*balance.linlin(~maxlean.neg,~maxlean,0,1));
 
 	}).add;
 
@@ -361,7 +373,6 @@ keyHandler = { | view, char, modifier, unicode, keycode |
 		~skels.clear;
 		~joints.clear;
 		~skelColors.clear;
-		~trainer.free;
 	};
 };
 
