@@ -3,10 +3,8 @@
 var keyHandler;
 var circlesize = 1.5;
 
-// todo fix line widths in debug mode
-// todo fix debug dial position
-// todo fix debug dial l/r
 // todo comment
+// todo make l/r debug dial choice
 // todo fix nil thing on real data
 // todo angles are not right: that should be 180-angle
 //      or something like that. display is correct though
@@ -212,7 +210,7 @@ v.drawFunc = {
 					Pen.addOval(
 						Rect(
 							offset,
-							(offset*user),
+							(offset),
 							2*r, 2*r;
 						);
 					);
