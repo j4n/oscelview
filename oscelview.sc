@@ -197,7 +197,10 @@ v.drawFunc = {
 				limbs = ~getLimbs.value(user);
 				kneeAngles = ~getKneeAngles.value(user, limbs);
 				bodyLean = ~getBodyLean.value(user);
+
 				~trainer.setn(\balance, bodyLean, \mix, bodyLean);
+
+				// the more bend the knees are, the faster & higher the pulse -> smoother sound
 				~trainer.setn(\pulse, kneeAngles[~kneeOfInterest].linlin(~minbend,~maxbend,0.25,1));
 
 				(~debug == True).if {
@@ -341,8 +344,8 @@ s.waitForBoot{
 			) * 0.4
 		}!2;
 
-		// balance adjusts how much we hear of the two synths
-		// mix the mixture of lo and hi
+		// balance adjusts how much we hear of the two synths:
+		//  the more we lean, the sharper the sound becomes on the opposite side by adjusting the mixture of lo and hi
 
 		Out.ar(0,XFade2.ar(lo[0], hi[0], mix.neg.linlin(~maxlean.neg, ~maxlean, -1,1))*balance.neg.linlin(~maxlean.neg,~maxlean,0,1));
 		Out.ar(1,XFade2.ar(lo[1], hi[1], mix.linlin(~maxlean.neg, ~maxlean, -1,1))*balance.linlin(~maxlean.neg,~maxlean,0,1));
