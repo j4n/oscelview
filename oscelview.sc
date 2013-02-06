@@ -285,9 +285,11 @@ Server.default = s = Server.internal;
 // s.quit;
 // s.boot;
 s.waitForBoot{
+	SynthDef( \trainer, { |pulse, balance=0, mix=0.5 |
 
-	SynthDef( \trainer, { |pulse, mixL, mixR |
-
+		// turn balance into respective mixL/R ratios
+		// ie. balance = 0:
+		//  mixL = mixR =
 		var lo, hi, in;
 
 		// two resonator banks, one high one low in frequency
@@ -319,16 +321,19 @@ s.waitForBoot{
 				freqoffset: 100,
 				decayscale: pulse.linexp(0.0, 1.0, 0.01, 2, 1)
 			) * 0.4
-		};
+		}!2;
 
-		Out.ar(0, XFade2.ar(lo, hi, mixL.linlin(0.0, 1.0, -1, 1)));
-		Out.ar(1, XFade2.ar(lo, hi, mixR.linlin(0.0, 1.0, -1, 1)));
+		// balance adjusts how much we hear of the two synths
+		// mix the mixture of lo and hi
+
+		Out.ar(0,XFade2.ar(lo[0], hi[0], mix.neg.linlin(-1, 1, -0.75, 0.75))*balance.neg.linlin(-1,1,0,1));
+		Out.ar(1,XFade2.ar(lo[1], hi[1], mix.linlin(-1, 1, -0.75, 0.75))*balance.linlin(-1,1,0,1));
 
 	}).add;
 
 	// initial synth setup
-	~trainer = Synth(\trainer, [\pulse, 0.0, \mixL, 0.5, \mixR, 0.5]); // starting exercise sound only occasionally
-	~trainer.setn(\pulse, 1, \mixL, 0.5, \mixR, 1.0);  // sound disappears
+	~trainer = Synth(\trainer, [\pulse, 0.0]); // starting exercise sound only occasionally
+	~trainer.setn(\pulse, 1, \mix, 0, \balance, 0);  // sound disappears
 };
 
 keyHandler = { | view, char, modifier, unicode, keycode |
