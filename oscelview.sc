@@ -4,16 +4,15 @@ var keyHandler;
 var circlesize = 1.5;
 
 // todo comment
-// todo make l/r debug dial choice
 // todo fix nil thing on real data
 // todo angles are not right: that should be 180-angle
 //      or something like that. display is correct though
 
-~debug = False;
+~debug = True;
 ~width = 1024;
 ~height = 768;
 
-~kneeOfInterest = 0; // [right,left]
+~kneeOfInterest = 1; // [right,left]
 
 ~piconst = 3.14159265359; // sic
 ~maxlean = 0.4; // empiric maximum value for body lean
@@ -44,6 +43,7 @@ var circlesize = 1.5;
 	[\r_knee, \r_foot]
 ];
 ~emphasizedJoints = Set[\head, \l_hand, \r_hand, \l_foot, \r_foot];
+~kneePairs = [[[\r_hip, \r_knee],[\r_knee, \r_foot]],[[\l_hip, \l_knee],[\l_knee, \l_foot]]];
 
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
 v = UserView(w, w.view.bounds);
@@ -170,8 +170,8 @@ v.drawFunc = {
 							if (
 								(~debug == True) and:
 								(
-									([\r_hip, \r_knee].isSubsetOf(jointPair)) or:
-									([\r_knee, \r_foot].isSubsetOf(jointPair))
+									(~kneePairs[~kneeOfInterest][0].isSubsetOf(jointPair)) or:
+									(~kneePairs[~kneeOfInterest][1].isSubsetOf(jointPair))
 								),
 								{
 									Pen.width = 5;
