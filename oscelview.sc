@@ -208,6 +208,7 @@ v.drawFunc = {
 					var offset = 20;
 					// debug left knee
 					var jointAngle = (180 - kneeAngles.at(~kneeOfInterest)) / 180 * ~piconst; // joint angle in radians
+					//var jointAngle = kneeAngles.at(~kneeOfInterest);
 
 					Pen.color = ~skelColors.at(user).complementary;
 					Pen.addOval(
@@ -226,9 +227,16 @@ v.drawFunc = {
 					);
 				    Pen.perform(\stroke);
 
-					// angle dial
+					// 0 grad =   offset+r    @ offset
+					// 90 grad =  offset+r+r  @ offset+r
+					// 180 grad = offset+r    @ offset+(2*r)
+
+
+					//offset+r + (jointAngle - (~piconst/4)).abs.linlin(0,(~piconst/4),0,r) @ jointAngle.linlin(0,(~piconst/2),offset,offset+(2*r))
+
+					// angle dial - line from the center to a point between the top an the bottom along the right side
 					Pen.line(
-						(offset+r)@(offset+r),
+						(offset+r)@(offset+r), // center
 						((offset+r)+(jointAngle.sin*r))@((offset+r)-((jointAngle.cos*r)))
 					);
 				    Pen.perform(\stroke);
