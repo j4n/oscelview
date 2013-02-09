@@ -9,10 +9,10 @@ var circlesize = 1.5;
 //      or something like that. display is correct though
 
 ~debug = True;
-~width = 1024;
-~height = 768;
+~width = 640;
+~height = 480;
 
-~kneeOfInterest = 1; // [right,left]
+~kneeOfInterest = 0; // [right,left]
 
 ~piconst = 3.14159265359; // sic
 ~maxlean = 0.4; // empiric maximum value for body lean
@@ -48,7 +48,7 @@ var circlesize = 1.5;
 w = Window.new("OSCeleton Viewer",Rect(100, 200, ~width, ~height),false);
 v = UserView(w, w.view.bounds);
 v.background_(Color.grey(0.97));
-v.frameRate = 10;
+v.frameRate = 30;
 
 // compute absolute coords in userview
 ~getCoords = { | user, joint |
